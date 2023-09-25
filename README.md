@@ -23,3 +23,6 @@ A Bizhawk Lua script for improving Fire Emblem: Genealogy of the Holy War by add
 - Second-generation player units almost definitely will not be read correctly. I know they will be different. I do not yet know how.
 - The combat forecast may sometimes show the target as being able to counterattack even when they cannot. Specifically, I know that a silenced enemy will show as countering even though they are silenced and thus cannot.
 - The stats overlay may sometimes show at times when it probably shouldn't. This is why I provide a global toggle button to make it go away when it is unwelcome. Eventually, I aim for this global toggle to be unnecessary; the overlay when show when it is welcome and hide when it is not.
+
+# When reporting issues
+Issue reports are welcome and encouraged. When reporting an issue, it is tremendously helpful to attach a savestate at the place where the issue occurs. Savestates can be found at \[Your Bizhawk folder\]/SNES/State.
