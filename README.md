@@ -26,7 +26,7 @@ This script was specifically designed to only include quality-of-life improvemen
 - \[First time setup only\] Bind 2nd player A button to something. Anything. As long as you can press it.
 - Load the script. Tools > Lua Console, Open "Genealogy UI Project.lua".
 - The script should start running. It can be stopped and started by double-clicking it in the Lua Console. To confirm, place the in-game cursor on any unit, and its combat stats should appear at the bottom of the screen.
-- At any time, you can press the B button to toggle all script displays on or off.
+- At any time, you can press player 2 A button to toggle all script displays on or off.
 
 # Currently known issues (As of Sept 25, 2023)
 - The way in which unit data is interpreted varies by unit. Some units may need to be interpreted in a way I don't know about yet. All units in the prologue and chapter 1 appear to be interpreted correctly. Some later units may not be.
