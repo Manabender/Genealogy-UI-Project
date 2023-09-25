@@ -1,6 +1,16 @@
 # Genealogy-UI-Project
 A Bizhawk Lua script for improving Fire Emblem: Genealogy of the Holy War by adding modern UI elements.
 
+# What this script does
+The Genealogy UI Project was created in order to add modern information display improvements to a game that predates them. These improvements are heavily inspired by Fire Emblem Engage, and should be a very welcome aid to anyone looking to explore Fire Emblem history after being introduced to the series by recent entries. Specifically, this script implements the following:
+
+- On-hover unit stat display. Just by placing your cursor on a unit, you can see it's Attack, Hit, Avoid, Defense, Movement, equipped weapon, and much more -- just like in Engage.
+- Improved combat forecast. The concept of a combat forecast was still in its infancy in this game's day. Whenever you go to attack a unit, you'll see a much better forecast with more information and calculated values -- very similar to Engage.
+- Health bars. Every unit's relative health is shown by a small green bar at their feet.
+- And maybe more to come?
+
+This script was specifically designed to only include quality-of-life improvements. No part of it alters the gameplay or the game's natural difficulty in any way. No information is displayed that can't already be seen elsewhere in the game (or, in some cases, calculated yourself). Game memory is only ever read, never written to.
+
 # What you will need
 - Bizhawk v2.9.1. Other versions may or may not work, even later versions.
 - A legally-obtained ROM file of Fire Emblem - Seisen no Keifu. (The author does not condone piracy. Please obtain your copy legally.)
@@ -22,7 +32,8 @@ A Bizhawk Lua script for improving Fire Emblem: Genealogy of the Holy War by add
 - The way in which unit data is interpreted varies by unit. Some units may need to be interpreted in a way I don't know about yet. All units in the prologue and chapter 1 appear to be interpreted correctly. Some later units may not be.
 - Second-generation player units almost definitely will not be read correctly. I know they will be different. I do not yet know how.
 - The combat forecast may sometimes show the target as being able to counterattack even when they cannot. Specifically, I know that a silenced enemy will show as countering even though they are silenced and thus cannot.
-- The stats overlay may sometimes show at times when it probably shouldn't. This is why I provide a global toggle button to make it go away when it is unwelcome. Eventually, I aim for this global toggle to be unnecessary; the overlay when show when it is welcome and hide when it is not.
+- The stats overlay may sometimes show at times when it probably shouldn't. This is why I provide a global toggle button to make it go away when it is unwelcome. Eventually, I aim for this global toggle to be unnecessary; the overlay will show when it is welcome and hide when it is not.
+- If there is a player unit in a castle, their health bar may display at the castle entrance on the map. This is a low-priority issue, but a known one nonetheless.
 
 # When reporting issues
 Issue reports are welcome and encouraged. When reporting an issue, it is tremendously helpful to attach a savestate at the place where the issue occurs. Savestates can be found at \[Your Bizhawk folder\]/SNES/State.
