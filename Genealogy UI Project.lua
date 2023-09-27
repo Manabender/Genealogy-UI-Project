@@ -1210,12 +1210,12 @@ function DisplayCombatForecast()
 	gui.drawText(0, 179, attackerHPBefore..">"..attackerHPAfter, nil, PLAYER_TEXT_COLOR);
 	gui.drawText(248, 179, targetHPAfter.."<"..targetHPBefore, nil, ENEMY_TEXT_COLOR, nil, nil, nil, "right");
 	
-	gui.drawBox(45, 183, 45+attackerMaxHP, 190, nil, "#FF000000");
-	gui.drawBox(45, 183, 45+attackerHPBefore, 190, "#00000000", "#FFFF0000");
-	gui.drawBox(45, 183, 45+attackerHPAfter, 190, "#00000000", "#FF00FF00");
-	gui.drawBox(203, 183, 203-targetMaxHP, 190, nil, "#FF000000");
-	gui.drawBox(203, 183, 203-targetHPBefore, 190, "#00000000", "#FFFF0000");
-	gui.drawBox(203, 183, 203-targetHPAfter, 190, "#00000000", "#FF00FF00");
+	gui.drawBox(45, 183, 45+attackerMaxHP+1, 190, nil, "#FF000000");
+	gui.drawBox(45, 183, 45+attackerHPBefore+1, 190, "#00000000", "#FFFF0000");
+	gui.drawBox(45, 183, 45+attackerHPAfter+1, 190, "#00000000", "#FF00FF00");
+	gui.drawBox(203, 183, 203-targetMaxHP-1, 190, nil, "#FF000000");
+	gui.drawBox(203, 183, 203-targetHPBefore-1, 190, "#00000000", "#FFFF0000");
+	gui.drawBox(203, 183, 203-targetHPAfter-1, 190, "#00000000", "#FF00FF00");
 	
 	local arrowTail = "----";
 	if (attackerSkills&0x0200 == 0x0200 or targetSkills&0x0200 == 0x0200) then
