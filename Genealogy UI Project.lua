@@ -21,6 +21,7 @@ historyIndex = 1;
 HISTORY_SIZE = 6;
 UNIT_ID_MINIMUM_VALID = 0x2000;
 UNIT_ID_MAXIMUM_VALID = 0x29ff; --Unit IDs always seem to be between $2000 and $29FF. If $10B5 is outside this range, I disable the overlay.
+COMBAT_SCENE_PROBE_ADDRESS = 0x15f7; --I have no idea what is actually stored here, but it seems to be 0 outside of combat and nonzero in combat scene. This is a HUGE assumption.
 
 factionColors = {}; --The color/team of factions varies on a per-map basis, and I can't figure out how the game references it internally.
                     --I cheat off the game's homework by looking at the HP bubble displayed when you cursor on a unit, but this has a delay.
@@ -1303,6 +1304,17 @@ function DisplayMapHealthBars()
 		::continue::
 	end
 end
+
+--Function: IsCombatSceneShown()
+--Summary: Attempts to determine if the game is currently showing a combat scene. Returns true if we think it is, and false otherwise.
+--Parameters: None.
+--Returns: boolean
+function IsCombatSceneShown()
+	if (mainmemory.read_u8(COMBAT_SCENE_PROBE_ADDRESS) > 0) then --This is a HUGE guess. Five minutes of testing back this claim up. This is not enough testing.
+		return true;
+	end
+	return false;
+end
 	
 --Continually-running BizHawk scripts always take the boilerplate form "while true do [stuff] emu.frameadvance(); end".
 --Consider this the "main()" function.
@@ -1363,6 +1375,8 @@ while true do
 			gui.clearGraphics();
 		elseif (forecastDisplayed) then
 			DisplayCombatForecast();
+		elseif (IsCombatSceneShown()) then
+			gui.clearGraphics();
 		elseif (unitIsSelectedForMovement) then
 			DisplayMapHealthBars();
 			DisplayUnitStatsOverlay();
