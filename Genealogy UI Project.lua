@@ -3,6 +3,7 @@
 --This script adds an information overlay to the bottom of the screen showing details about the hovered-over unit.
 --The layout of this overlay was heavily inspired by (read: outright ripped-off from) Fire Emblem Engage.
 --This script also adds a better combat forecast, inspired by more recent FE games.
+--Note that this script REQUIRES the BSNES emulator core to be enabled, which it is not by default. Config > Preferred Cores > Snes > BSNES.
 
 LUA_TABLES_SUCK = 1; --Whenever you see this, it's because I'm using a 0-based index into a Lua table, which is 1-based. LUA WHY DO YOU DO THIS. THIS IS STUPID.
 
@@ -1217,7 +1218,7 @@ function DisplayCombatForecast()
 	gui.drawBox(203, 183, 203-targetHPAfter, 190, "#00000000", "#FF00FF00");
 	
 	local arrowTail = "----";
-	if (attackerSkills&0x0200) == 0x0200 then
+	if (attackerSkills&0x0200 == 0x0200 or targetSkills&0x0200 == 0x0200) then
 		arrowTail = "-x?-";
 	end
 	if (targetWillVantage and canTargetCounter) then
