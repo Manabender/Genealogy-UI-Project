@@ -9,6 +9,9 @@ The Genealogy UI Project was created in order to add modern information display 
 - Health bars. Every unit's relative health is shown by a small green bar at their feet.
 - And maybe more to come?
 
+![Demonstration of on-hover unit stat display and health bars](/genealogy%20overlay.png)
+![Demonstration of improved combat forecast](/genealogy%20forecast.png)
+
 This script was specifically designed to only include quality-of-life improvements. No part of it alters the gameplay or the game's natural difficulty in any way. No information is displayed that can't already be seen elsewhere in the game (or, in some cases, calculated yourself). Game memory is only ever read, never written to.
 
 # What you will need
