@@ -9,6 +9,8 @@ LUA_TABLES_SUCK = 1; --Whenever you see this, it's because I'm using a 0-based i
 
 globalToggle = true; --This script listens to the A button on 2P's controller. When it is pressed, the ENTIRE DISPLAY is toggled on and off.
 p2ALastFrame = false; --Was A on 2P's controller "down" on the last frame? Important because I only want to detect rising edges.
+p2BLastFrame = false;
+p2XFrames = 0;
 
 DISPLAY_FLAGS = 0x0349; --These three bytes seem to correspond loosely with what "mode" the game is in, where modes include things like:
                      --cursor active to select unit; unit selected and move range shown; picking unit action; combat; castle; etc.
@@ -34,6 +36,13 @@ CGRAM_FACTION_GREEN = 0x4f58;
 CGRAM_FACTION_YELLOW = 0x5318;
 HP_BUBBLE_CHECK_ADDRESS = 0x0349; --Address in WRAM that always seems to be 82 if the HP bubble is displayed.
 HP_BUBBLE_CHECK_VALUE = 82;
+
+tileMarks = {}; --Table denoting what "threat range" marks are placed on the map. Initialized to a 64x64 grid.
+for i = 1, 64 do
+	tileMarks[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+end
+CURSOR_X_ADDRESS = 0x1075; --Cursor location is stored quite weirdly. The map-x position of the cursor is equal to [$1076]+([$1075]/16).
+CURSOR_Y_ADDRESS = 0x1095; --^ Ditto
 
 FORECAST_VRAM_ADDRESS_CHECKS_RIGHT = {0xa864, 0xaa74, 0xacba, 0xace4}; --I cannot for the life of me find an address in memory that corresponds to 
 FORECAST_VRAM_ADDRESS_CHECKS_LEFT = {0xa844, 0xaa54, 0xac9a, 0xacc4}; --"hey, am I showing the combat forecast?". So as a workaround, I instead check
@@ -1305,6 +1314,53 @@ function DisplayMapHealthBars()
 	end
 end
 
+--Function: HandleThreatRange()
+--Summary: Manages input and display of threat range overlay.
+--Parameters: None.
+--Returns: Nothing.
+function HandleThreatRange()
+	local p2ControllerButtons = joypad.get(2);
+	local p2B = p2ControllerButtons["B"];
+	if (p2B and not p2BLastFrame) then
+		local cursorX = mainmemory.read_u8(CURSOR_X_ADDRESS+1) + (math.floor(mainmemory.read_u8(CURSOR_X_ADDRESS)/16)); --Very strange way of storing cursor position...
+		local cursorY = mainmemory.read_u8(CURSOR_Y_ADDRESS+1) + (math.floor(mainmemory.read_u8(CURSOR_Y_ADDRESS)/16));
+		if (tileMarks[cursorX][cursorY] == 0) then
+			tileMarks[cursorX][cursorY] = 1;
+			print("Added mark at "..cursorX..","..cursorY);
+		else
+			tileMarks[cursorX][cursorY] = 0;
+			print("Removed mark at "..cursorX..","..cursorY);
+		end
+	end
+	p2BLastFrame = p2B;
+
+	local p2X = p2ControllerButtons["X"];
+	if (p2X) then
+		p2XFrames = p2XFrames + 1;
+		if (p2XFrames <= 59) then
+			gui.drawText(0,10,"Resetting threat marks...", nil, PLAYER_TEXT_COLOR);
+		else
+			for i = 1,64 do
+				tileMarks[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+			end
+			gui.drawText(0,10,"Threat marks reset", nil, PLAYER_TEXT_COLOR);
+		end
+	else
+		p2XFrames = 0;
+	end
+
+	local bgScrollX = mainmemory.read_u16_le(BG1_SCREEN_X_SCROLL);
+	local bgScrollY = mainmemory.read_u16_le(BG1_SCREEN_Y_SCROLL);
+
+	for i = 1,64 do
+		for j = 1,64 do
+			if (tileMarks[i][j] == 1) then
+				gui.drawBox(i*16-bgScrollX,j*16-bgScrollY,i*16-bgScrollX+15,j*16-bgScrollY+15,"#7feb34c0","#3feb34c0");
+			end
+		end
+	end
+end
+
 --Function: IsCombatSceneShown()
 --Summary: Attempts to determine if the game is currently showing a combat scene. Returns true if we think it is, and false otherwise.
 --Parameters: None.
@@ -1319,11 +1375,11 @@ end
 --Continually-running BizHawk scripts always take the boilerplate form "while true do [stuff] emu.frameadvance(); end".
 --Consider this the "main()" function.
 while true do
-	
+	memory.usememorydomain("System Bus"); --This is default behavior, but I've learned not to trust defaults and instead state them explicitly.
 	
 
 	local p2ControllerButtons = joypad.get(2);
-	p2A = p2ControllerButtons["A"];
+	local p2A = p2ControllerButtons["A"];
 	if (p2A and not p2ALastFrame) then
 		globalToggle = not globalToggle;
 	end
@@ -1378,6 +1434,7 @@ while true do
 		elseif (IsCombatSceneShown()) then
 			gui.clearGraphics();
 		elseif (unitIsSelectedForMovement) then
+			HandleThreatRange();
 			DisplayMapHealthBars();
 			DisplayUnitStatsOverlay();
 		elseif (handCursorDisplayed) then
@@ -1385,6 +1442,7 @@ while true do
 		elseif (displayFlags&126 == 126) then --%01111110 and %01111111 seem to always correspond to cases where it's inappropriate for any overlay, EXCEPT for forecast and when unit move range is shown.
 			gui.clearGraphics();
 		else --All disable checks have passed; show overlay.
+			HandleThreatRange();
 			DisplayMapHealthBars();
 			DisplayUnitStatsOverlay();
 		end		
