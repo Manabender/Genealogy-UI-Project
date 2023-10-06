@@ -41,6 +41,7 @@ tileMarks = {}; --Table denoting what "threat range" marks are placed on the map
 for i = 1, 64 do
 	tileMarks[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 end
+markQueued = false; --As a workaround for certain bugs and inconsistancies, threat marks are ONLY placed when the cursor is aligned to the grid. If the player requests a mark while unaligned, I "queue" the request and fulfill it next time cursor is aligned.
 CURSOR_X_ADDRESS = 0x1075; --Cursor location is stored quite weirdly. The map-x position of the cursor is equal to [$1076]+([$1075]/16).
 CURSOR_Y_ADDRESS = 0x1095; --^ Ditto
 
@@ -48,12 +49,15 @@ FORECAST_VRAM_ADDRESS_CHECKS_RIGHT = {0xa864, 0xaa74, 0xacba, 0xace4}; --I canno
 FORECAST_VRAM_ADDRESS_CHECKS_LEFT = {0xa844, 0xaa54, 0xac9a, 0xacc4}; --"hey, am I showing the combat forecast?". So as a workaround, I instead check
 FORECAST_VRAM_VALUE_CHECKS = {0x2368, 0x237b, 0x237a, 0x2378}; --VRAM for a few tiles of the forecast window. If all of them match, I conclude the forecast is up.
 
+OAM_CURSOR_X = 0x00;
+OAM_CURSOR_Y = 0x01;
+CURSOR_OFFSET_CORRECTION = 3; --The cursor oscillates between being 2 and 3 pixels away from the actual space it's on.
 OAM_CURSOR_TILE_ADDRESS = 0x02; --Address of the tile for the upper left corner of the map cursor. A specific tile is used when a unit is selected awaiting a move location. I check for that tile.
 OAM_CURSOR_TILE_UNIT_SELECTED = 4; --The tile index used, see above.
 OAM_CURSOR_TILE_HAND = 2;
 
-HOVERED_UNIT_POINTER_TABLE_POINTER = 0x10b5; --$10B5. The value here leads to several pointers with data about the unit the cursor is (or was last) on.
-TARGET_UNIT_POINTER_TABLE_POINTER = 0x056f; --$056F. For combat forecast, this is the target being attacked.
+HOVERED_UNIT_POINTER_TABLE_POINTER = 0x10b5; --The value here leads to several pointers with data about the unit the cursor is (or was last) on.
+TARGET_UNIT_POINTER_TABLE_POINTER = 0x056f; --For combat forecast, this is the target being attacked.
 
 POINTER_TABLE_DATA_PATTERN_OFFSET = 0; --This byte seems to correspond to how the unit's data should be read. Values of 0 and 2 are "player" patterns, 3 is "enemy". Others probably exist.
 POINTER_TABLE_CORE_STATS_OFFSET = 1; --All offsets into the above pointer table designate a three-byte little endian value that points to certain data.
@@ -1322,15 +1326,29 @@ function HandleThreatRange()
 	local p2ControllerButtons = joypad.get(2);
 	local p2B = p2ControllerButtons["B"];
 	if (p2B and not p2BLastFrame) then
-		local cursorX = mainmemory.read_u8(CURSOR_X_ADDRESS+1) + (math.floor(mainmemory.read_u8(CURSOR_X_ADDRESS)/16)); --Very strange way of storing cursor position...
-		local cursorY = mainmemory.read_u8(CURSOR_Y_ADDRESS+1) + (math.floor(mainmemory.read_u8(CURSOR_Y_ADDRESS)/16));
-		if (tileMarks[cursorX][cursorY] == 0) then
-			tileMarks[cursorX][cursorY] = 1;
-			print("Added mark at "..cursorX..","..cursorY);
-		else
-			tileMarks[cursorX][cursorY] = 0;
-			print("Removed mark at "..cursorX..","..cursorY);
+		markQueued = true;
+	end
+	if (markQueued) then
+		memory.usememorydomain("OAM");
+		local cursorX = memory.read_u8(OAM_CURSOR_X) + mainmemory.read_u16_le(BG1_SCREEN_X_SCROLL) + CURSOR_OFFSET_CORRECTION;
+		local cursorY = memory.read_u8(OAM_CURSOR_Y) + mainmemory.read_u16_le(BG1_SCREEN_Y_SCROLL) + CURSOR_OFFSET_CORRECTION;
+		if (cursorX % 4 ~= 0) then
+			cursorX = cursorX - 1; --Sometimes the cursor is 3 away, sometimes it's only 2 away. But it always moves 4 pixels at a time. This adjustment corrects for that.
 		end
+		if (cursorY % 4 ~= 0) then
+			cursorY = cursorY - 1; --Sometimes the cursor is 3 away, sometimes it's only 2 away. But it always moves 4 pixels at a time. This adjustment corrects for that.
+		end
+		if (cursorX % 16 == 0 and cursorY % 16 == 0) then
+			if (tileMarks[cursorX/16][cursorY/16] == 0) then
+				tileMarks[cursorX/16][cursorY/16] = 1;
+				--print("Added mark at "..cursorX..","..cursorY);
+			else
+				tileMarks[cursorX/16][cursorY/16] = 0;
+				--print("Removed mark at "..cursorX..","..cursorY);
+			end
+			markQueued = false;
+		end
+		memory.usememorydomain("System Bus");
 	end
 	p2BLastFrame = p2B;
 
@@ -1397,7 +1415,7 @@ while true do
 			historyIndex = 1;
 		end
 		
-		--Is the forecast displayed? Have to check here instead of the if/elseif tree below because we have to temporarily switch memory domains.
+		--Is the game's own combat forecast displayed? Have to check here instead of the if/elseif tree below because we have to temporarily switch memory domains.
 		local forecastDisplayed = false;		
 		memory.usememorydomain("VRAM");
 		if (memory.read_u16_le(FORECAST_VRAM_ADDRESS_CHECKS_RIGHT[1]) == FORECAST_VRAM_VALUE_CHECKS[1] and memory.read_u16_le(FORECAST_VRAM_ADDRESS_CHECKS_RIGHT[2]) == FORECAST_VRAM_VALUE_CHECKS[2] and memory.read_u16_le(FORECAST_VRAM_ADDRESS_CHECKS_RIGHT[3]) == FORECAST_VRAM_VALUE_CHECKS[3] and memory.read_u16_le(FORECAST_VRAM_ADDRESS_CHECKS_RIGHT[4]) == FORECAST_VRAM_VALUE_CHECKS[4]) then
