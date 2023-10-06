@@ -7,7 +7,7 @@ The Genealogy UI Project was created in order to add modern information display 
 - On-hover unit stat display. Just by placing your cursor on a unit, you can see it's Attack, Hit, Avoid, Defense, Movement, equipped weapon, and much more -- just like in Engage.
 - Improved combat forecast. The concept of a combat forecast was still in its infancy in this game's day. Whenever you go to attack a unit, you'll see a much better forecast with more information and calculated values -- very similar to Engage.
 - Health bars. Every unit's relative health is shown by a small green bar at their feet.
-- And maybe more to come?
+- Player can "mark" squares -- intended for use as a "threatened squares" display. If it is possible to implement without issue, a true threat range display is planned for the near future.
 
 ![Demonstration of on-hover unit stat display and health bars](/genealogy%20overlay.png)
 ![Demonstration of improved combat forecast](/genealogy%20forecast.png)
@@ -26,11 +26,11 @@ This script was specifically designed to only include quality-of-life improvemen
 - \[First time setup only\] BSNES core must be used. Config > Preferred Cores > SNES > BSNES.
 - Load the game ROM.
 - \[First time setup only\] Enable 2nd player controller. SNES > Controller Configuration > set Port 2 to Gamepad.
-- \[First time setup only\] Bind 2nd player A button to something. Anything. As long as you can press it.
+- \[First time setup only\] Bind 2nd player's A, B, and X buttons to something. Anything. As long as you can press them.
 - Load the script. Tools > Lua Console, Open "Genealogy UI Project.lua".
 - The script should start running. It can be stopped and started by double-clicking it in the Lua Console. To confirm, place the in-game cursor on any unit, and its combat stats should appear at the bottom of the screen.
 - At any time, you can press player 2 A button to toggle all script displays on or off.
-- Note: The script requires the "Unit Window" option in-game to be ON. No part of the script will work if it is off. Additionally, 
+- You can press player 2 B button to place a mark on the cursor's square. Press player 2 B on a marked square to remove the mark. Press and hold player 2 X for one second to remove all marks.
 
 # Currently known issues (As of Oct 4, 2023)
 - The way in which unit data is interpreted varies by unit. Some units may need to be interpreted in a way I don't know about yet. All units in the prologue and chapter 1 appear to be interpreted correctly. Some later units may not be.
