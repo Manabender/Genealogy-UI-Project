@@ -297,6 +297,37 @@ MOVETYPE_FIGHTER = 6;
 MOVETYPE_BRIGAND = 7;
 MOVETYPE_PIRATE = 8;
 
+MOVE_COSTS = { --Table defining the amount of movement required to enter each tile type, for each unit movetype. Values multiplied by 10 because road tiles are technically 0.7, but I don't trust floats like I do ints.
+               --999 indicates that a unit can't move into this tile.
+--Kn1  Kn2  Fly Foot  Amr  Fgt  Brg  Prt
+{ 999, 999,  10, 999, 999, 999, 999, 999}, --Peak
+{ 999, 999,  10, 999, 999, 999,  50, 999}, --Thicket
+{ 999, 999,  10, 999, 999, 999, 999, 999}, --Cliff
+{  10,  10,  10,  10,  10,  10,  10,  10}, --Plain
+{  30,  30,  10,  20,  20,  20,  20,  20}, --Woods
+{ 999, 999,  10, 999, 999, 999, 999,  50}, --Sea
+{ 999, 999,  10, 999, 999, 999, 999,  50}, --Stream
+{ 999,  30,  10,  20, 999,  20,  20,  20}, --Mountain
+{  40,  40,  10,  20,  30,  30,  20,  20}, --Desert
+{ 999, 999, 999, 999, 999, 999, 999, 999}, --Castle (I think this is the tile that a castle defender occupies?)
+{  10,  10,  10,  10,  10,  10,  10,  10}, --Fort (Assuming all 1???)
+{  10,  10,  10,  10,  10,  10,  10,  10}, --House (Assuming all 1???)
+{  10,  10,  10,  10,  10,  10,  10,  10}, --Gate (Assuming all 1???)
+{ 999, 999, 999, 999, 999, 999, 999, 999}, --Rampart (I think these are tiles of a castle that aren't movable?)
+{  10,  10,  10,  10,  10,  10,  10,  10}, --Sands
+{   7,   7,  10,   7,   7,   7,   7,   7}, --Bridge
+{  10,  10,  10,  10,  10,  10,  10,  10}, --Bog (What is this???)
+{  10,  10,  10,  10,  10,  10,  10,  10}, --Gate (How is this different from the other Gate?)
+{  10,  10,  10,  10,  10,  10,  10,  10}, --Village
+{  10,  10,  10,  10,  10,  10,  10,  10}, --Ruin (How is this different from the other Ruin?)
+{  10,  10,  10,  10,  10,  10,  10,  10}, --Store (Assuming all 1???)
+{  10,  10,  10,  10,  10,  10,  10,  10}, --Ruin (How is this different from the other Ruin?)
+{  10,  10,  10,  10,  10,  10,  10,  10}, --Chapel
+{  10,  10,  10,  10,  10,  10,  10,  10}, --Shrine (Assuming all 1???)
+{ 999, 999,  10, 999, 999, 999, 999, 999}, --T. of Bragi
+{   7,   7,  10,   7,   7,   7,   7,   7}  --Road
+} --Game graphics go completely bonkers if it reads a tile type ID of 26 or greater. This makes me confident that only types 0-25 will appear.
+
 CLASS_DATA = { --           Bases                                 Growths
 --Name          HP Str Mag Skl Spd Def Res Mov  Gold   HP  Str Mag Skl Spd Def Res  Effective?              Skill           Skill           Movetype
 {"Cavalier"   ,	30,	7,	0,	6,	6,	6,	0,	8,	1000, 100, 30, 10, 30, 30, 30, 10,  WEAPONEFFECTIVE_HORSE,              0,              0, MOVETYPE_KNIGHT1},
