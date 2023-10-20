@@ -1508,6 +1508,7 @@ while true do
 		end		
 	else
 		gui.clearGraphics();
+		gui.drawBox(250,218,256,224,"#FFFF0000","#FFFF0000");
 	end
 	
 	--[[
