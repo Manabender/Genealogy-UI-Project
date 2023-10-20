@@ -1001,6 +1001,9 @@ function DisplayCombatForecast()
 	gui.drawText(0, 169, WEAPON_DATA[attackerWeaponID + LUA_TABLES_SUCK][WEAPON_NAME], nil, PLAYER_TEXT_COLOR);
 	
 	local targetWeaponID = mainmemory.read_u8(FORECAST_TARGET_WEAPON_ID);
+	if (targetWeaponID == 0) then
+		targetWeaponID = 88; --If no weapon, assume Heal Staff.
+	end
 	gui.drawText(248, 169, WEAPON_DATA[targetWeaponID + LUA_TABLES_SUCK][WEAPON_NAME], nil, ENEMY_TEXT_COLOR, nil, nil, nil, "right");
 	
 	local attackerHPBefore = mainmemory.read_u8(FORECAST_ATTACKER_HP);	
