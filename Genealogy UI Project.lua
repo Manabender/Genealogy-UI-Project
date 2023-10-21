@@ -316,7 +316,7 @@ MOVE_COSTS = { --Table defining the amount of movement required to enter each ti
 { 999, 999, 999, 999, 999, 999, 999, 999}, --Rampart (I think these are tiles of a castle that aren't movable?)
 {  10,  10,  10,  10,  10,  10,  10,  10}, --Sands
 {   7,   7,  10,   7,   7,   7,   7,   7}, --Bridge
-{  10,  10,  10,  10,  10,  10,  10,  10}, --Bog (What is this???)
+{  50,  50,  10,  40,  40,  40,  40,  40}, --Bog (I can't find mention of this in any guides or databases. Perhaps this is an unused tile type?
 {  10,  10,  10,  10,  10,  10,  10,  10}, --Gate (How is this different from the other Gate?)
 {  10,  10,  10,  10,  10,  10,  10,  10}, --Village
 {  10,  10,  10,  10,  10,  10,  10,  10}, --Ruin (How is this different from the other Ruin?)
@@ -427,146 +427,146 @@ CLASS_SKILL1 = 19;
 CLASS_SKILL2 = 20;
 CLASS_MOVETYPE = 21;
 
---Name         Mt  Wt  Hit             Type               Effective?          Skill          Skill2    Brave?
+--Name         Mt  Wt  Hit  Range1 Range2 Range3           Type               Effective?          Skill          Skill2    Brave?
 WEAPON_DATA = {
-{"Iron Sword",  6,  3,  80,   WEAPONTYPE_SWORD,                      0,              0,             0, 0}, --$00
-{"SteelSword", 10,  3,  80,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"SilvrSword", 14,  3,  80,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"Iron Blade", 12,  6,  60,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"SteelBlade", 16,  6,  60,   WEAPONTYPE_SWORD,                      0,              0,             0, 0}, --$04
-{"SilvrBlade", 20,  6,  60,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"MiracleSwd", 12,  3,  70,   WEAPONTYPE_SWORD,                      0,  SKILL_MIRACLE,             0, 0},
-{"ThiefSword",  3,  2,  50,   WEAPONTYPE_SWORD,                      0,    SKILL_STEAL,             0, 0},
-{"BarrierSwd", 10,  3,  70,   WEAPONTYPE_SWORD,                      0,              0,             0, 0}, --$08
-{"BerserkEdg",  8, 12,  70,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"BraveSword", 12,  3, 100,   WEAPONTYPE_SWORD,                      0,              0,             0, 1},
-{"SilenceEdg",  8, 12,  70,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"Sleep Edge",  8, 12,  70,   WEAPONTYPE_SWORD,                      0,              0,             0, 0}, --$0C
-{"Slim Sword",  8,  1,  90,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"ShieldSwrd", 12,  5,  90,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"FlameSword", 12,  5,  70,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"EarthSword", 12,  5,  70,   WEAPONTYPE_SWORD,                      0,              0,             0, 0}, --$10
-{"Bolt Sword", 12,  5,  70,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"Wind Sword", 12,  5,  70,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"LightBrand", 12,  5,  70,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"*Mystltain", 30,  5,  80,   WEAPONTYPE_SWORD,                      0, SKILL_CRITICAL,             0, 0}, --$14
-{"*Tilfing"  , 30,  7,  80,   WEAPONTYPE_SWORD,                      0,  SKILL_MIRACLE,             0, 0},
-{"*Balmung"  , 30,  3,  90,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"Armorslayr",  6,  5,  70,   WEAPONTYPE_SWORD,  WEAPONEFFECTIVE_ARMOR,              0,             0, 0},
-{"Wingslayer",  6,  5,  70,   WEAPONTYPE_SWORD, WEAPONEFFECTIVE_FLYING,              0,             0, 0}, --$18
-{"BrokenSwdA",  0, 30,  30,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"BrokenSwdB",  0, 30,  30,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"BrokenSwdC",  0, 30,  30,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
-{"Iron Lance", 12, 12,  80,   WEAPONTYPE_LANCE,                      0,              0,             0, 0}, --$1C
-{"SteelLance", 16, 12,  80,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
-{"SilvrLance", 20, 12,  80,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
-{"Javelin"   , 12, 18,  60,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
-{"Horseslayr", 10, 16,  60,   WEAPONTYPE_LANCE,  WEAPONEFFECTIVE_HORSE,              0,             0, 0}, --$20
-{"BraveLance", 15, 12,  80,   WEAPONTYPE_LANCE,                      0,              0,             0, 1},
-{"Slim Lance", 12,  6,  90,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
-{"*Gungnir"  , 30, 15,  70,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
-{"*Gae Bolg" , 30, 15,  70,   WEAPONTYPE_LANCE,                      0,              0,             0, 0}, --$24
-{"BrokenLncA",  0, 30,  30,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
-{"BrokenLncB",  0, 30,  30,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
-{"BrokenLncC",  0, 30,  30,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
-{"Iron Axe"  , 14, 18,  70,     WEAPONTYPE_AXE,                      0,              0,             0, 0}, --$28
-{"Steel Axe" , 18, 18,  70,     WEAPONTYPE_AXE,                      0,              0,             0, 0},
-{"Silver Axe", 22, 18,  70,     WEAPONTYPE_AXE,                      0,              0,             0, 0},
-{"Brave Axe" , 22, 18,  70,     WEAPONTYPE_AXE,                      0,              0,             0, 1},
-{"*Helswath" , 30, 20,  70,     WEAPONTYPE_AXE,                      0,              0,             0, 0}, --$2C
-{"Hand Axe"  , 10, 20,  50,     WEAPONTYPE_AXE,                      0,              0,             0, 0},
-{"BrokenAxeA",  0, 30,  30,     WEAPONTYPE_AXE,                      0,              0,             0, 0},
-{"BrokenAxeA",  0, 30,  30,     WEAPONTYPE_AXE,                      0,              0,             0, 0},
-{"BrokenAxeA",  0, 30,  30,     WEAPONTYPE_AXE,                      0,              0,             0, 0}, --$30
-{"Iron Bow"  , 10,  8,  70,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
-{"Steel Bow" , 14,  8,  70,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
-{"Silver Bow", 18,  8,  70,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
-{"Brave Bow" , 14,  8,  80,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 1}, --$34
-{"Killer Bow", 14,  3, 100,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING, SKILL_CRITICAL,             0, 0},
-{"*Yewfelle" , 30, 13,  70,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,  SKILL_RENEWAL,             0, 0},
-{"BrokenBowA",  0, 30,  30,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
-{"BrokenBowB",  0, 30,  30,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0}, --$38
-{"BrokenBowC",  0, 30,  30,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
-{"Ballista"  , 15, 30,  60,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
-{"IronBalsta", 25, 30,  60,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
-{"KilrBalsta", 20, 30, 100,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING, SKILL_CRITICAL,             0, 0}, --$3C
-{"GreatBlsta", 30, 30,  50,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
-{"Fire"      ,  8, 12,  90,    WEAPONTYPE_FIRE,                      0,              0,             0, 0},
-{"Elfire"    , 14, 12,  80,    WEAPONTYPE_FIRE,                      0,              0,             0, 0},
-{"Bolganone" , 20, 12,  70,    WEAPONTYPE_FIRE,                      0,              0,             0, 0}, --$40
-{"*Valflame" , 30, 15,  80,    WEAPONTYPE_FIRE,                      0,              0,             0, 0},
-{"Meteor"    , 15, 30,  60,    WEAPONTYPE_FIRE,                      0,              0,             0, 0},
-{"Thunder"   ,  8,  7,  90, WEAPONTYPE_THUNDER,                      0,              0,             0, 0},
-{"Elthunder" , 14,  7,  80, WEAPONTYPE_THUNDER,                      0,              0,             0, 0}, --$44
-{"Thoron"    , 20,  7,  70, WEAPONTYPE_THUNDER,                      0,              0,             0, 0},
-{"*Mjolnir"  , 30, 10,  90, WEAPONTYPE_THUNDER,                      0,              0,             0, 0},
-{"Bolting"   , 15, 30,  60, WEAPONTYPE_THUNDER,                      0,              0,             0, 0},
-{"Wind"      ,  8,  2,  90,    WEAPONTYPE_WIND,                      0,              0,             0, 0}, --$48
-{"Elwind"    , 14,  2,  80,    WEAPONTYPE_WIND,                      0,              0,             0, 0},
-{"Tornado"   , 20,  2,  70,    WEAPONTYPE_WIND,                      0,              0,             0, 0},
-{"*Forseti"  , 30,  5,  90,    WEAPONTYPE_WIND,                      0,              0,             0, 0},
-{"Blizzard"  , 15, 30,  60,    WEAPONTYPE_WIND,                      0,              0,             0, 0}, --$4C
-{"Light"     , 14,  5,  90,   WEAPONTYPE_LIGHT,                      0,              0,             0, 0},
-{"Nosferatu" , 14, 12,  70,   WEAPONTYPE_LIGHT,                      0,              0,             0, 0},
-{"Aura"      , 20, 20,  80,   WEAPONTYPE_LIGHT,                      0,              0,             0, 0},
-{"*Naga"     , 30, 12,  80,   WEAPONTYPE_LIGHT,                      0,              0,             0, 0}, --$50
-{"Jormungand", 20, 12,  90,    WEAPONTYPE_DARK,                      0,              0,             0, 0},
-{"Fenrir"    , 14, 20,  70,    WEAPONTYPE_DARK,                      0,              0,             0, 0},
-{"Hel"       , 50, 28,  60,    WEAPONTYPE_DARK,                      0,              0,             0, 0}, --     Mt isn't actually 50 but this will show a very high number,
-{"*Loptyr"   , 30, 12,  80,    WEAPONTYPE_DARK,                      0,              0,             0, 0}, --$54  because Hel just reduces target to 1 HP, it's a big threat.
-{"DrainedTmA",  0,  0,   0,    WEAPONTYPE_FIRE,                      0,              0,             0, 0}, 
-{"DrainedTmB",  0,  0,   0,    WEAPONTYPE_FIRE,                      0,              0,             0, 0}, --     Not sure if drained tomes can be used, not sure if their
-{"DrainedTmC",  0,  0,   0,    WEAPONTYPE_FIRE,                      0,              0,             0, 0}, --     weapontypes actually matter.
-{"Heal"      ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0}, --$58
-{"Mend"      ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
-{"Recover"   ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
-{"Physic"    ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
-{"Fortify"   ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0}, --$5C
-{"Return"    ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
-{"Warp"      ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
-{"Rescue"    ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
-{"Charm"     ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0}, --$60
-{"Restore"   ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
-{"*Valkyria" ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
-{"Silence"   ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
-{"Sleep"     ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0}, --$64
-{"Berserk"   ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
-{"Thief"     ,  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
-{"BrokeStafA",  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
-{"BrokeStafB",  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0}, --$68
-{"BrokeStafC",  0,  0,   0,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
-{"RenewalBnd",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"ParagonBnd",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,  SKILL_PARAGON,             0, 0},
-{"ThiefsBand",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,    SKILL_STEAL,             0, 0}, --$6C
-{"MiracleBnd",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,  SKILL_MIRACLE,             0, 0},
-{"PursuitBnd",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,  SKILL_PURSUIT,             0, 0},
-{"RecoverBnd",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"BargainBnd",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,  SKILL_BARGAIN,             0, 0}, --$70
-{"KnightRing",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"ReturnBand",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"Speed Ring",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"Magic Ring",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$74
-{"Power Ring",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"ShieldRing",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"BarierRing",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"Leg Ring"  ,  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$78
-{"Skill Ring",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$7C
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$80
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$84
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$88
-{"Circlet"   ,  0,  0,   0,   WEAPONTYPE_OTHER,                      0,  SKILL_MIRACLE, SKILL_RENEWAL, 0}  --Circlet, why are you way the heck down here?
+{"Iron Sword",  6,  3,  80,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0}, --$00
+{"SteelSword", 10,  3,  80,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"SilvrSword", 14,  3,  80,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"Iron Blade", 12,  6,  60,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"SteelBlade", 16,  6,  60,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0}, --$04
+{"SilvrBlade", 20,  6,  60,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"MiracleSwd", 12,  3,  70,  true, false, false,   WEAPONTYPE_SWORD,                      0,  SKILL_MIRACLE,             0, 0},
+{"ThiefSword",  3,  2,  50,  true, false, false,   WEAPONTYPE_SWORD,                      0,    SKILL_STEAL,             0, 0},
+{"BarrierSwd", 10,  3,  70,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0}, --$08
+{"BerserkEdg",  8, 12,  70,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"BraveSword", 12,  3, 100,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 1},
+{"SilenceEdg",  8, 12,  70,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"Sleep Edge",  8, 12,  70,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0}, --$0C
+{"Slim Sword",  8,  1,  90,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"ShieldSwrd", 12,  5,  90,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"FlameSword", 12,  5,  70,  true,  true, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"EarthSword", 12,  5,  70,  true,  true, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0}, --$10
+{"Bolt Sword", 12,  5,  70,  true,  true, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"Wind Sword", 12,  5,  70,  true,  true, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"LightBrand", 12,  5,  70,  true,  true, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"*Mystltain", 30,  5,  80,  true, false, false,   WEAPONTYPE_SWORD,                      0, SKILL_CRITICAL,             0, 0}, --$14
+{"*Tilfing"  , 30,  7,  80,  true, false, false,   WEAPONTYPE_SWORD,                      0,  SKILL_MIRACLE,             0, 0},
+{"*Balmung"  , 30,  3,  90,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"Armorslayr",  6,  5,  70,  true, false, false,   WEAPONTYPE_SWORD,  WEAPONEFFECTIVE_ARMOR,              0,             0, 0},
+{"Wingslayer",  6,  5,  70,  true, false, false,   WEAPONTYPE_SWORD, WEAPONEFFECTIVE_FLYING,              0,             0, 0}, --$18
+{"BrokenSwdA",  0, 30,  30,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"BrokenSwdB",  0, 30,  30,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"BrokenSwdC",  0, 30,  30,  true, false, false,   WEAPONTYPE_SWORD,                      0,              0,             0, 0},
+{"Iron Lance", 12, 12,  80,  true, false, false,   WEAPONTYPE_LANCE,                      0,              0,             0, 0}, --$1C
+{"SteelLance", 16, 12,  80,  true, false, false,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
+{"SilvrLance", 20, 12,  80,  true, false, false,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
+{"Javelin"   , 12, 18,  60,  true,  true, false,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
+{"Horseslayr", 10, 16,  60,  true, false, false,   WEAPONTYPE_LANCE,  WEAPONEFFECTIVE_HORSE,              0,             0, 0}, --$20
+{"BraveLance", 15, 12,  80,  true, false, false,   WEAPONTYPE_LANCE,                      0,              0,             0, 1},
+{"Slim Lance", 12,  6,  90,  true, false, false,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
+{"*Gungnir"  , 30, 15,  70,  true, false, false,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
+{"*Gae Bolg" , 30, 15,  70,  true, false, false,   WEAPONTYPE_LANCE,                      0,              0,             0, 0}, --$24
+{"BrokenLncA",  0, 30,  30,  true, false, false,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
+{"BrokenLncB",  0, 30,  30,  true, false, false,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
+{"BrokenLncC",  0, 30,  30,  true, false, false,   WEAPONTYPE_LANCE,                      0,              0,             0, 0},
+{"Iron Axe"  , 14, 18,  70,  true, false, false,     WEAPONTYPE_AXE,                      0,              0,             0, 0}, --$28
+{"Steel Axe" , 18, 18,  70,  true, false, false,     WEAPONTYPE_AXE,                      0,              0,             0, 0},
+{"Silver Axe", 22, 18,  70,  true, false, false,     WEAPONTYPE_AXE,                      0,              0,             0, 0},
+{"Brave Axe" , 22, 18,  70,  true, false, false,     WEAPONTYPE_AXE,                      0,              0,             0, 1},
+{"*Helswath" , 30, 20,  70,  true,  true, false,     WEAPONTYPE_AXE,                      0,              0,             0, 0}, --$2C
+{"Hand Axe"  , 10, 20,  50,  true,  true, false,     WEAPONTYPE_AXE,                      0,              0,             0, 0},
+{"BrokenAxeA",  0, 30,  30,  true, false, false,     WEAPONTYPE_AXE,                      0,              0,             0, 0},
+{"BrokenAxeA",  0, 30,  30,  true, false, false,     WEAPONTYPE_AXE,                      0,              0,             0, 0},
+{"BrokenAxeA",  0, 30,  30,  true, false, false,     WEAPONTYPE_AXE,                      0,              0,             0, 0}, --$30
+{"Iron Bow"  , 10,  8,  70, false,  true, false,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
+{"Steel Bow" , 14,  8,  70, false,  true, false,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
+{"Silver Bow", 18,  8,  70, false,  true, false,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
+{"Brave Bow" , 14,  8,  80, false,  true, false,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 1}, --$34
+{"Killer Bow", 14,  3, 100, false,  true, false,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING, SKILL_CRITICAL,             0, 0},
+{"*Yewfelle" , 30, 13,  70, false,  true, false,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,  SKILL_RENEWAL,             0, 0},
+{"BrokenBowA",  0, 30,  30, false,  true, false,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
+{"BrokenBowB",  0, 30,  30, false,  true, false,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0}, --$38
+{"BrokenBowC",  0, 30,  30, false,  true, false,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
+{"Ballista"  , 15, 30,  60, false, false,  true,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
+{"IronBalsta", 25, 30,  60, false, false,  true,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
+{"KilrBalsta", 20, 30, 100, false, false,  true,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING, SKILL_CRITICAL,             0, 0}, --$3C
+{"GreatBlsta", 30, 30,  50, false, false,  true,     WEAPONTYPE_BOW, WEAPONEFFECTIVE_FLYING,              0,             0, 0},
+{"Fire"      ,  8, 12,  90,  true,  true, false,    WEAPONTYPE_FIRE,                      0,              0,             0, 0},
+{"Elfire"    , 14, 12,  80,  true,  true, false,    WEAPONTYPE_FIRE,                      0,              0,             0, 0},
+{"Bolganone" , 20, 12,  70,  true,  true, false,    WEAPONTYPE_FIRE,                      0,              0,             0, 0}, --$40
+{"*Valflame" , 30, 15,  80,  true,  true, false,    WEAPONTYPE_FIRE,                      0,              0,             0, 0},
+{"Meteor"    , 15, 30,  60, false, false,  true,    WEAPONTYPE_FIRE,                      0,              0,             0, 0},
+{"Thunder"   ,  8,  7,  90,  true,  true, false, WEAPONTYPE_THUNDER,                      0,              0,             0, 0},
+{"Elthunder" , 14,  7,  80,  true,  true, false, WEAPONTYPE_THUNDER,                      0,              0,             0, 0}, --$44
+{"Thoron"    , 20,  7,  70,  true,  true, false, WEAPONTYPE_THUNDER,                      0,              0,             0, 0},
+{"*Mjolnir"  , 30, 10,  90,  true,  true, false, WEAPONTYPE_THUNDER,                      0,              0,             0, 0},
+{"Bolting"   , 15, 30,  60, false, false,  true, WEAPONTYPE_THUNDER,                      0,              0,             0, 0},
+{"Wind"      ,  8,  2,  90,  true,  true, false,    WEAPONTYPE_WIND,                      0,              0,             0, 0}, --$48
+{"Elwind"    , 14,  2,  80,  true,  true, false,    WEAPONTYPE_WIND,                      0,              0,             0, 0},
+{"Tornado"   , 20,  2,  70,  true,  true, false,    WEAPONTYPE_WIND,                      0,              0,             0, 0},
+{"*Forseti"  , 30,  5,  90,  true,  true, false,    WEAPONTYPE_WIND,                      0,              0,             0, 0},
+{"Blizzard"  , 15, 30,  60, false, false,  true,    WEAPONTYPE_WIND,                      0,              0,             0, 0}, --$4C
+{"Light"     , 14,  5,  90,  true,  true, false,   WEAPONTYPE_LIGHT,                      0,              0,             0, 0},
+{"Nosferatu" , 14, 12,  70,  true,  true, false,   WEAPONTYPE_LIGHT,                      0,              0,             0, 0},
+{"Aura"      , 20, 20,  80,  true,  true, false,   WEAPONTYPE_LIGHT,                      0,              0,             0, 0},
+{"*Naga"     , 30, 12,  80,  true,  true, false,   WEAPONTYPE_LIGHT,                      0,              0,             0, 0}, --$50
+{"Jormungand", 20, 12,  90,  true,  true, false,    WEAPONTYPE_DARK,                      0,              0,             0, 0},
+{"Fenrir"    , 14, 20,  70, false, false,  true,    WEAPONTYPE_DARK,                      0,              0,             0, 0},
+{"Hel"       , 50, 28,  60,  true,  true, false,    WEAPONTYPE_DARK,                      0,              0,             0, 0}, --     Mt isn't actually 50 but this will show a very high number,
+{"*Loptyr"   , 30, 12,  80,  true,  true, false,    WEAPONTYPE_DARK,                      0,              0,             0, 0}, --$54  because Hel just reduces target to 1 HP, it's a big threat.
+{"DrainedTmA",  0,  0,   0, false, false, false,    WEAPONTYPE_FIRE,                      0,              0,             0, 0}, 
+{"DrainedTmB",  0,  0,   0, false, false, false,    WEAPONTYPE_FIRE,                      0,              0,             0, 0}, --     Not sure if drained tomes can be used, not sure if their
+{"DrainedTmC",  0,  0,   0, false, false, false,    WEAPONTYPE_FIRE,                      0,              0,             0, 0}, --     weapontypes actually matter.
+{"Heal"      ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0}, --$58
+{"Mend"      ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
+{"Recover"   ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
+{"Physic"    ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
+{"Fortify"   ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0}, --$5C
+{"Return"    ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
+{"Warp"      ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
+{"Rescue"    ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
+{"Charm"     ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0}, --$60
+{"Restore"   ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
+{"*Valkyria" ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
+{"Silence"   ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
+{"Sleep"     ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0}, --$64
+{"Berserk"   ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
+{"Thief"     ,  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
+{"BrokeStafA",  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
+{"BrokeStafB",  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0}, --$68
+{"BrokeStafC",  0,  0,   0, false, false, false,   WEAPONTYPE_STAFF,                      0,              0,             0, 0},
+{"RenewalBnd",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"ParagonBnd",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,  SKILL_PARAGON,             0, 0},
+{"ThiefsBand",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,    SKILL_STEAL,             0, 0}, --$6C
+{"MiracleBnd",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,  SKILL_MIRACLE,             0, 0},
+{"PursuitBnd",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,  SKILL_PURSUIT,             0, 0},
+{"RecoverBnd",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"BargainBnd",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,  SKILL_BARGAIN,             0, 0}, --$70
+{"KnightRing",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"ReturnBand",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"Speed Ring",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"Magic Ring",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$74
+{"Power Ring",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"ShieldRing",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"BarierRing",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"Leg Ring"  ,  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$78
+{"Skill Ring",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$7C
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$80
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$84
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$88
+{"Circlet"   ,  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,  SKILL_MIRACLE, SKILL_RENEWAL, 0}  --Circlet, why are you way the heck down here?
 }
 NUM_WEAPONS = #WEAPON_DATA; -- # is the "get length" operator of Lua.
 --Enumeration of the indices into the above data table.
@@ -574,12 +574,15 @@ WEAPON_NAME = 1;
 WEAPON_MT = 2;
 WEAPON_WT = 3;
 WEAPON_HIT = 4;
-WEAPON_TYPE = 5;
-WEAPON_EFFECTIVE = 6; --Does this weapon deal Effective damage to any type of units?
-WEAPON_SKILL = 7; --Does this weapon give the unit a skill?
-WEAPON_SKILL2 = 8;
-WEAPON_IS_BRAVE = 9; --Is this a "brave" weapon, that strikes twice? 1 if yes, 0 if no. (Note from future Mana: This really should have been a boolean. What were you doing, past Mana?)
-WEAPON_DATA[256] = {"No weapon", 0, 0, 0, WEAPONTYPE_OTHER, 0, 0, 0, 0} --When attacking a unit that can't counter, the game reports it as having weapon ID 255. This entry allows the script to handle that.
+WEAPON_RANGE1 = 5; --Can the weapon attack at 1 range?
+WEAPON_RANGE2 = 6; --Can the weapon attack at 2 range?
+WEAPON_RANGE3 = 7; --Can the weapon attack at 3-10 range?
+WEAPON_TYPE = 8;
+WEAPON_EFFECTIVE = 9; --Does this weapon deal Effective damage to any type of units?
+WEAPON_SKILL = 10; --Does this weapon give the unit a skill?
+WEAPON_SKILL2 = 11;
+WEAPON_IS_BRAVE = 12; --Is this a "brave" weapon, that strikes twice? 1 if yes, 0 if no. (Note from future Mana: This really should have been a boolean. What were you doing, past Mana?)
+WEAPON_DATA[256] = {"No weapon", 0, 0, 0, false, false, false, WEAPONTYPE_OTHER, 0, 0, 0, 0} --When attacking a unit that can't counter, the game reports it as having weapon ID 255. This entry allows the script to handle that.
 
 
 PLAYER_TEXT_COLOR = "#3F0000FF";
