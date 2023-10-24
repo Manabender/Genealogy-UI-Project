@@ -41,7 +41,6 @@ This script was specifically designed to only include quality-of-life improvemen
 - If there is a player unit in a castle, their health bar may display at the castle entrance on the map. This is a low-priority issue, but a known one nonetheless.
 - The "Unit Window" option in-game must be set to ON. If off, no part of the script will work. This issue will not be fixed; the unit window is required to determine the color of a unit. (Note that the option is on by default, so this hardly matters.)
 - The "Terrain Window" option in-game must be set to ON. If off, the stats overlay and health bars will only show when the cursor is on a unit. This issue will not intentionally be fixed, but might be resolved as a side-effect of a future update. (Note that the option is on by default, so this hardly matters.)
-- If the attacker's raw attack is less than the target's defense, the forecast will report a negative attack. This is being kept at the behest of a friend who considers it a feature, not a bug.
 
 # When reporting issues
 Issue reports are welcome and encouraged. When reporting an issue, it is tremendously helpful to attach a savestate at the place where the issue occurs. Savestates can be found at \[Your Bizhawk folder\]/SNES/State.

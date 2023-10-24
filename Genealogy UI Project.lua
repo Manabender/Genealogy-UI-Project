@@ -1251,8 +1251,8 @@ function DisplayCombatForecast()
 	local attackerDefense = mainmemory.read_u8(FORECAST_ATTACKER_DEF);
 	local targetRawAttack = mainmemory.read_u8(FORECAST_TARGET_ATK);
 	local targetDefense = mainmemory.read_u8(FORECAST_TARGET_DEF);
-	local attackerEffectiveAttack = attackerRawAttack - targetDefense;
-	local targetEffectiveAttack = targetRawAttack - attackerDefense;
+	local attackerEffectiveAttack = math.max(attackerRawAttack - targetDefense, 1);
+	local targetEffectiveAttack = math.max(targetRawAttack - attackerDefense, 1);
 	local attackerTotalAttack = attackerEffectiveAttack * attackerNumSwings;
 	local targetTotalAttack = targetEffectiveAttack * targetNumSwings;
 	gui.drawText(0, 189, "Atk "..attackerTotalAttack, nil, PLAYER_TEXT_COLOR);
