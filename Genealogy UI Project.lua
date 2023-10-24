@@ -37,10 +37,17 @@ CGRAM_FACTION_YELLOW = 0x5318;
 HP_BUBBLE_CHECK_ADDRESS = 0x0349; --Address in WRAM that always seems to be 82 if the HP bubble is displayed.
 HP_BUBBLE_CHECK_VALUE = 82;
 
-tileMarks = {}; --Table denoting what "threat range" marks are placed on the map. Initialized to a 64x64 grid.
+playerMarks = {}; --Table denoting what player-placed "threat range" marks are placed on the map.
+threatGrid = {}; --Table denoting how every tile should (or should not) be marked as threatened.
+occupiedGrid = {}; --Table denoting where player units are. Enemies can't move through these tiles.
+displayedThreatGrid = {} --Table denoting where threat marks are actually displayed. threatGrid is used during computation, then once finished, is copied here for display.
 for i = 1, 64 do
-	tileMarks[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	playerMarks[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	threatGrid[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	occupiedGrid[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	displayedThreatGrid[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 end
+threatProcessFrame = 0; --Calculating threat ranges is computationally expensive, so the work is distributed across several frames to avoid slowdown.
 markQueued = false; --As a workaround for certain bugs and inconsistancies, threat marks are ONLY placed when the cursor is aligned to the grid. If the player requests a mark while unaligned, I "queue" the request and fulfill it next time cursor is aligned.
 CURSOR_X_ADDRESS = 0x1075; --Cursor location is stored quite weirdly. The map-x position of the cursor is equal to [$1076]+([$1075]/16).
 CURSOR_Y_ADDRESS = 0x1095; --^ Ditto
@@ -1405,11 +1412,11 @@ function HandleThreatRange()
 			cursorY = cursorY - 1; --Sometimes the cursor is 3 away, sometimes it's only 2 away. But it always moves 4 pixels at a time. This adjustment corrects for that.
 		end
 		if (cursorX % 16 == 0 and cursorY % 16 == 0) then
-			if (tileMarks[cursorX/16][cursorY/16] == 0) then
-				tileMarks[cursorX/16][cursorY/16] = 1;
+			if (playerMarks[cursorX/16][cursorY/16] == 0) then
+				playerMarks[cursorX/16][cursorY/16] = 1;
 				--print("Added mark at "..cursorX..","..cursorY);
 			else
-				tileMarks[cursorX/16][cursorY/16] = 0;
+				playerMarks[cursorX/16][cursorY/16] = 0;
 				--print("Removed mark at "..cursorX..","..cursorY);
 			end
 			markQueued = false;
@@ -1425,7 +1432,7 @@ function HandleThreatRange()
 			gui.drawText(0,10,"Resetting threat marks...", nil, PLAYER_TEXT_COLOR);
 		else
 			for i = 1,64 do
-				tileMarks[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+				playerMarks[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 			end
 			gui.drawText(0,10,"Threat marks reset", nil, PLAYER_TEXT_COLOR);
 		end
@@ -1433,12 +1440,22 @@ function HandleThreatRange()
 		p2XFrames = 0;
 	end
 
+
+	threatProcessFrame = threatProcessFrame + 1; --Calculating threat ranges is computationally expensive, so the work is distributed across several frames to avoid slowdown.
+	--On frame 1, things are initialized.
+
+	--On frames 2-19, threat ranges are calculated, four units per frame. (The game only allocates memory for 72 units)
+
+	--On frame 20, the calculated data is copied over to the displayed grid to be shown.
+
+
+
 	local bgScrollX = mainmemory.read_u16_le(BG1_SCREEN_X_SCROLL);
 	local bgScrollY = mainmemory.read_u16_le(BG1_SCREEN_Y_SCROLL);
 
 	for i = 1,64 do
 		for j = 1,64 do
-			if (tileMarks[i][j] == 1) then
+			if (playerMarks[i][j] == 1) then
 				gui.drawBox(i*16-bgScrollX,j*16-bgScrollY,i*16-bgScrollX+15,j*16-bgScrollY+15,"#7feb34c0","#3feb34c0");
 			end
 		end
