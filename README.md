@@ -36,6 +36,7 @@ This script was specifically designed to only include quality-of-life improvemen
 - The way in which unit data is interpreted varies by unit. Some units may need to be interpreted in a way I don't know about yet. All units in the prologue and chapter 1 appear to be interpreted correctly. Some later units may not be.
 - Second-generation player units almost definitely will not be read correctly. I know they will be different. I do not yet know how.
 - The combat forecast may sometimes show the target as being able to counterattack even when they cannot. Specifically, I know that a silenced enemy will show as countering even though they are silenced and thus cannot.
+- Healing caused by Nosferatu is not reflected in the combat forecast. (This will be fixed at some point)
 - The stats overlay may sometimes show at times when it probably shouldn't. This is why I provide a global toggle button to make it go away when it is unwelcome. Eventually, I aim for this global toggle to be unnecessary; the overlay will show when it is welcome and hide when it is not.
 - If there is a player unit in a castle, their health bar may display at the castle entrance on the map. This is a low-priority issue, but a known one nonetheless.
 - The "Unit Window" option in-game must be set to ON. If off, no part of the script will work. This issue will not be fixed; the unit window is required to determine the color of a unit. (Note that the option is on by default, so this hardly matters.)
