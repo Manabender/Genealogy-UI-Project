@@ -48,6 +48,7 @@ for i = 1, 64 do
 	displayedThreatGrid[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 end
 threatProcessFrame = 0; --Calculating threat ranges is computationally expensive, so the work is distributed across several frames to avoid slowdown.
+threatProcessIndicatorPos = 0; --A small white square is shown in the upper right corner, and moved each time the threat process completes. This is it's y position.
 markQueued = false; --As a workaround for certain bugs and inconsistancies, threat marks are ONLY placed when the cursor is aligned to the grid. If the player requests a mark while unaligned, I "queue" the request and fulfill it next time cursor is aligned.
 CURSOR_X_ADDRESS = 0x1075; --Cursor location is stored quite weirdly. The map-x position of the cursor is equal to [$1076]+([$1075]/16).
 CURSOR_Y_ADDRESS = 0x1095; --^ Ditto
@@ -144,12 +145,13 @@ WEAPON_ENTRY_KILLS_OFFSET = 5; --FE4 tracks how many kills each weapon gets.
 --These tables, however, group the same variable for all units into contiguous memory.
 --All of these tables are two-byte little-endian values, even those that never need to use more than one byte. This means each table is 144 ($90) bytes long.
 --These tables grow UPWARD; that is, while the X-screen-position table occupies $441B~$44AA, the first-filled entry is at $44A9, the second is $44A7, etc.
---Tables I don't use: $438B: Some sort of status flags?  $465B: No idea.  $477B: Affiliation, as far as I can tell.
+--Tables I don't use: $438B: Some sort of status flags?  $465B: No idea.
 UNIT_X_POSITION_TABLE = 0x441b;
 UNIT_Y_POSITION_TABLE = 0x44ab;
 UNIT_X_SCREEN_POSITION_TABLE = 0x453b; --This is always(?) just 16 times their map position.
 UNIT_Y_SCREEN_POSITION_TABLE = 0x45cb;
 UNIT_POINTER_TABLE = 0x46eb; --The same pointers I look for at $10B5.
+UNIT_AFFILIATION_TABLE = 0x477b;
 UNIT_VARIABLES_TABLE_SIZE = 72;
 
 BG1_SCREEN_X_SCROLL = 0x0598; --Addresses that helpfully always seem to mirror BG1's scroll registers.
@@ -1391,6 +1393,14 @@ function DisplayMapHealthBars()
 	end
 end
 
+--Function: UnitThreatRange()
+--Summary: Determines all squares the specified (enemy) unit is capable of attacking. Results are placed in threatGrid.
+--Parameters: tableEntry; an index into the game's unit table. Valid values: integers within 0-71 inclusive.
+--Returns: Nothing directly, but updates threatGrid.
+function UnitThreatRange(tableEntry)
+
+end
+
 --Function: HandleThreatRange()
 --Summary: Manages input and display of threat range overlay.
 --Parameters: None.
@@ -1443,10 +1453,40 @@ function HandleThreatRange()
 
 	threatProcessFrame = threatProcessFrame + 1; --Calculating threat ranges is computationally expensive, so the work is distributed across several frames to avoid slowdown.
 	--On frame 1, things are initialized.
-
+	if (threatProcessFrame == 1) then
+		for i = 1,64 do
+			threatGrid[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+			occupiedGrid[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+		end
+		for i = 0,142,2 do --Set up occupiedGrid; what spaces are occupied by player units? Enemies can't pass through them.
+			local unitAffiliation = mainmemory.read_u8(UNIT_AFFILIATION_TABLE + i);
+			local unitPointer = mainmemory.read_u16_le(UNIT_POINTER_TABLE + i);
+			if (unitAffiliation == 0 and unitPointer ~= 0) then --Unit must be player affiliation, and the slot needs to actually contain a unit.
+				local unitX = mainmemory.read_u8(UNIT_X_POSITION_TABLE + i);
+				local unitY = mainmemory.read_u8(UNIT_Y_POSITION_TABLE + i);
+				occupiedGrid[unitX][unitY] = 1;
+			end
+		end
 	--On frames 2-19, threat ranges are calculated, four units per frame. (The game only allocates memory for 72 units)
-
-	--On frame 20, the calculated data is copied over to the displayed grid to be shown.
+	elseif (threatProcessFrame <= 19) then
+	-- -8, -7, -6, -5
+		UnitThreatRange(threatProcessFrame*4 - 8);
+		UnitThreatRange(threatProcessFrame*4 - 7);
+		UnitThreatRange(threatProcessFrame*4 - 6);
+		UnitThreatRange(threatProcessFrame*4 - 5);
+	--On frame 20, the calculated data is copied over to the displayed grid to be shown, and a small visual indicator is updated in the upper right corner to show that an update occurred.
+	else
+		for i = 1,64 do
+			for j = 1,64 do
+				displayedThreatGrid[i][j] = threatGrid[i][j];
+			end
+		end
+		threatProcessIndicatorPos = threatProcessIndicatorPos + 4;
+		if (threatProcessIndicatorPos >= 16) then
+			threatProcessIndicatorPos = threatProcessIndicatorPos - 16;
+		end
+		threatProcessFrame = 0;
+	end
 
 
 
@@ -1460,6 +1500,7 @@ function HandleThreatRange()
 			end
 		end
 	end
+	gui.drawRectangle(252,threatProcessIndicatorPos,4,4,"#FFFFFFFF","#FFFFFFFF");
 end
 
 --Function: IsCombatSceneShown()
