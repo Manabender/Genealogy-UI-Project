@@ -40,18 +40,25 @@ HP_BUBBLE_CHECK_VALUE = 82;
 playerMarks = {}; --Table denoting what player-placed "threat range" marks are placed on the map.
 threatGrid = {}; --Table denoting how every tile should (or should not) be marked as threatened.
 occupiedGrid = {}; --Table denoting where player units are. Enemies can't move through these tiles.
-displayedThreatGrid = {} --Table denoting where threat marks are actually displayed. threatGrid is used during computation, then once finished, is copied here for display.
+displayedThreatGrid = {}; --Table denoting where threat marks are actually displayed. threatGrid is used during computation, then once finished, is copied here for display.
+terrainGrid = {};
 for i = 1, 64 do
 	playerMarks[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	threatGrid[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	occupiedGrid[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	displayedThreatGrid[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	terrainGrid[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 end
+highlightedUnits = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; --Which units has the player "highlighted", to show their threat range in a different color.
 threatProcessFrame = 0; --Calculating threat ranges is computationally expensive, so the work is distributed across several frames to avoid slowdown.
 threatProcessIndicatorPos = 0; --A small white square is shown in the upper right corner, and moved each time the threat process completes. This is it's y position.
 markQueued = false; --As a workaround for certain bugs and inconsistancies, threat marks are ONLY placed when the cursor is aligned to the grid. If the player requests a mark while unaligned, I "queue" the request and fulfill it next time cursor is aligned.
+maximalThreatMode = false; --User can toggle between normal threat, and "maximal" threat, which shows where enemies could go if your units weren't in the way.
+ADJACENT_TILES = {{0,1}, {0,-1}, {1,0}, {-1,0}};
 CURSOR_X_ADDRESS = 0x1075; --Cursor location is stored quite weirdly. The map-x position of the cursor is equal to [$1076]+([$1075]/16).
 CURSOR_Y_ADDRESS = 0x1095; --^ Ditto
+TERRAIN_POINTER_TABLE = 0x12400; --From here to 0x143ff is terrain data, each entry 2 bytes large. The lowest 10 bits point to tile type data.
+TERRAIN_TILE_TYPE_TABLE = 0x12000; --Say you want x = 1, y = 3 tile type. Read 0x12582 (0x12400 + 2x + 128y). Say that's 0x0643. Mask with 0x3ff to get 0x0243. Now read 0x12243 (one byte); that's your tile type. (Plains, road, etc.)
 
 FORECAST_VRAM_ADDRESS_CHECKS_RIGHT = {0xa864, 0xaa74, 0xacba, 0xace4}; --I cannot for the life of me find an address in memory that corresponds to 
 FORECAST_VRAM_ADDRESS_CHECKS_LEFT = {0xa844, 0xaa54, 0xac9a, 0xacc4}; --"hey, am I showing the combat forecast?". So as a workaround, I instead check
@@ -600,6 +607,60 @@ GREEN_TEXT_COLOR = "#3F00FF00";
 YELLOW_TEXT_COLOR = "#3FFFFF00";
 UNKNOWN_TEXT_COLOR = "#3FFF00FF"; --This is used as a stopgap for if both the HP bubble is absent and the cache doesn't have data yet.
 UNEXPECTED_TEXT_COLOR = "3F7F7F7F"; --This is used if CGRAM has a color I haven't seen.
+
+RANGE3_TABLE = {{3, 0}, {-3, 0}, {0, 3}, {0, -3}, --A list of every tile offset that lies between 3 and 10 of (0,0).
+{2, 1}, {-2, 1}, {2, -1}, {-2, -1}, --List was generated with a Python script I cobbled together in like five minutes.
+{1, 2}, {-1, 2}, {1, -2}, {-1, -2},
+{4, 0}, {-4, 0}, {0, 4}, {0, -4},
+{3, 1}, {-3, 1}, {3, -1}, {-3, -1},
+{2, 2}, {-2, 2}, {2, -2}, {-2, -2},
+{1, 3}, {-1, 3}, {1, -3}, {-1, -3},
+{5, 0}, {-5, 0}, {0, 5}, {0, -5},
+{4, 1}, {-4, 1}, {4, -1}, {-4, -1},
+{3, 2}, {-3, 2}, {3, -2}, {-3, -2},
+{2, 3}, {-2, 3}, {2, -3}, {-2, -3},
+{1, 4}, {-1, 4}, {1, -4}, {-1, -4},
+{6, 0}, {-6, 0}, {0, 6}, {0, -6},
+{5, 1}, {-5, 1}, {5, -1}, {-5, -1},
+{4, 2}, {-4, 2}, {4, -2}, {-4, -2},
+{3, 3}, {-3, 3}, {3, -3}, {-3, -3},
+{2, 4}, {-2, 4}, {2, -4}, {-2, -4},
+{1, 5}, {-1, 5}, {1, -5}, {-1, -5},
+{7, 0}, {-7, 0}, {0, 7}, {0, -7},
+{6, 1}, {-6, 1}, {6, -1}, {-6, -1},
+{5, 2}, {-5, 2}, {5, -2}, {-5, -2},
+{4, 3}, {-4, 3}, {4, -3}, {-4, -3},
+{3, 4}, {-3, 4}, {3, -4}, {-3, -4},
+{2, 5}, {-2, 5}, {2, -5}, {-2, -5},
+{1, 6}, {-1, 6}, {1, -6}, {-1, -6},
+{8, 0}, {-8, 0}, {0, 8}, {0, -8},
+{7, 1}, {-7, 1}, {7, -1}, {-7, -1},
+{6, 2}, {-6, 2}, {6, -2}, {-6, -2},
+{5, 3}, {-5, 3}, {5, -3}, {-5, -3},
+{4, 4}, {-4, 4}, {4, -4}, {-4, -4},
+{3, 5}, {-3, 5}, {3, -5}, {-3, -5},
+{2, 6}, {-2, 6}, {2, -6}, {-2, -6},
+{1, 7}, {-1, 7}, {1, -7}, {-1, -7},
+{9, 0}, {-9, 0}, {0, 9}, {0, -9},
+{8, 1}, {-8, 1}, {8, -1}, {-8, -1},
+{7, 2}, {-7, 2}, {7, -2}, {-7, -2},
+{6, 3}, {-6, 3}, {6, -3}, {-6, -3},
+{5, 4}, {-5, 4}, {5, -4}, {-5, -4},
+{4, 5}, {-4, 5}, {4, -5}, {-4, -5},
+{3, 6}, {-3, 6}, {3, -6}, {-3, -6},
+{2, 7}, {-2, 7}, {2, -7}, {-2, -7},
+{1, 8}, {-1, 8}, {1, -8}, {-1, -8},
+{10, 0}, {-10, 0}, {0, 10}, {0, -10},
+{9, 1}, {-9, 1}, {9, -1}, {-9, -1},
+{8, 2}, {-8, 2}, {8, -2}, {-8, -2},
+{7, 3}, {-7, 3}, {7, -3}, {-7, -3},
+{6, 4}, {-6, 4}, {6, -4}, {-6, -4},
+{5, 5}, {-5, 5}, {5, -5}, {-5, -5},
+{4, 6}, {-4, 6}, {4, -6}, {-4, -6},
+{3, 7}, {-3, 7}, {3, -7}, {-3, -7},
+{2, 8}, {-2, 8}, {2, -8}, {-2, -8},
+{1, 9}, {-1, 9}, {1, -9}, {-1, -9}};
+RANGE3_TABLE_SIZE = #RANGE3_TABLE;
 
 --Function: WeaponIsPhysical(weaponID)
 --Summary: Returns true if the given weapon deals physical damage, and false if it deals magic damage (or no damage at all).
@@ -1393,12 +1454,134 @@ function DisplayMapHealthBars()
 	end
 end
 
+--index out of bounds errors can kiss my
+function SetThreatGrid(x, y, val)
+	if (x < 1 or x > 64 or y < 1 or y > 64) then
+		return;
+	end
+	threatGrid[x][y] = math.max(threatGrid[x][y], val);
+end
+
 --Function: UnitThreatRange()
 --Summary: Determines all squares the specified (enemy) unit is capable of attacking. Results are placed in threatGrid.
 --Parameters: tableEntry; an index into the game's unit table. Valid values: integers within 0-71 inclusive.
 --Returns: Nothing directly, but updates threatGrid.
 function UnitThreatRange(tableEntry)
+	local offset = tableEntry * 2;
+	local unitID = mainmemory.read_u16_le(UNIT_POINTER_TABLE + offset);
+	if (unitID == 0) then
+		return; --Unit slot is empty.
+	end
+	
+	local coreStatsPointer = mainmemory.read_u16_le(unitID + POINTER_TABLE_CORE_STATS_OFFSET);
+	local enemyRomStatsPointer = mainmemory.read_u24_le(unitID + POINTER_TABLE_ENEMY_ROM_STATS_OFFSET);
+	local weaponDataPointer = mainmemory.read_u16_le(unitID + POINTER_TABLE_WEAPON_DATA_OFFSET);
+	if (enemyRomStatsPointer == 0) then
+		return; --I don't know how this is possible. I don't know what the game is doing. All I know is that sometimes this happens and if I don't
+		        --break out here when it does, we crash and burn. Please send help.
+	end
+	
+	local unitAffiliation = mainmemory.read_u8(UNIT_AFFILIATION_TABLE + offset);
+	local unitColor = factionColors[unitAffiliation + LUA_TABLES_SUCK];
+	local unitHP = mainmemory.read_u8(coreStatsPointer + CORE_STATS_CURRENT_HP_OFFSET);
+	if (unitColor == nil) then
+		return;
+	elseif (unitColor ~= 2 or unitHP == 0) then
+		return; --Check if the unit is alive and an enemy. Abort if not.
+	end
+	
+	local distanceGrid = {}; --This stores how far away, in movecost, each square is from the unit.
+	for i = 1,64 do
+		distanceGrid[i] = {999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999};
+	end
+	local unitX = mainmemory.read_u8(UNIT_X_POSITION_TABLE + offset);
+	local unitY = mainmemory.read_u8(UNIT_Y_POSITION_TABLE + offset);
+	distanceGrid[unitX][unitY] = 0; --The space the unit is at is 0 away. By definition.
+	local checkTiles = { {unitX, unitY} }; --List of tile coordinates to check. Start with where the unit is.
+	local markType = 1; --Are we applying normal global marks, or highlighted marks?
+	if (highlightedUnits[tableEntry + LUA_TABLES_SUCK] == 1) then
+		markType = 2;
+	end
+	
+	--Scan weapons to determine what ranges are covered
+	local range1 = false;
+	local range2 = false;
+	local range3 = false; --For range 3-10
+	local numWeapons = mainmemory.read_u8(weaponDataPointer + WEAPON_DATA_NUM_ITEMS_OFFSET);
+	for i = 1,numWeapons do
+		local weaponID = mainmemory.read_u8(weaponDataPointer + WEAPON_DATA_LIST_OFFSET + i - 1);
+		if (WEAPON_DATA[weaponID + LUA_TABLES_SUCK][WEAPON_RANGE1]) then
+			range1 = true;
+		end
+		if (WEAPON_DATA[weaponID + LUA_TABLES_SUCK][WEAPON_RANGE2]) then
+			range2 = true;
+		end
+		if (WEAPON_DATA[weaponID + LUA_TABLES_SUCK][WEAPON_RANGE3]) then
+			range3 = true;
+		end
+	end
+	if (not range1 and not range2 and not range3) then
+		return; --Unit has no attack weapons and thus threatens nothing.
+	end
+	
+	SetThreatGrid(unitX, unitY, markType); --Just for the sake of avoiding an awkward hole; an enemy unit always threatens its own tile.
+	
+	local mov = 0;
+	local classID = memory.read_u8(enemyRomStatsPointer + ENEMY_ROM_STATS_CLASS_OFFSET);
+	if (not range3) then --If my sources are correct, having a range 3-10 weapon forces the unit to have 0 mov.		
+		mov = CLASS_DATA[classID + LUA_TABLES_SUCK][CLASS_MOV] * 10; --Multiply by 10 because of roads, basically. They cost 0.7 for most units and I don't trust floats like I do ints.
+	end
+	local checkIndex = 1; --The index into checkTiles we're currently checking in the loop below.
+	local checkSize = 1; --I suspect it's easier to just keep track of checkTiles's size myself instead of make lua compute its size repeatedly.
+	while (checkIndex <= checkSize) do
+		local checkX = checkTiles[checkIndex][1];
+		local checkY = checkTiles[checkIndex][2];
+		if (range1) then
+			SetThreatGrid(checkX+1,checkY,markType);
+			SetThreatGrid(checkX-1,checkY,markType);
+			SetThreatGrid(checkX,checkY+1,markType);
+			SetThreatGrid(checkX,checkY-1,markType);
+		end
+		if (range2) then --This could be more elegantly done in a loop perhaps, but unrolling it makes it run faster. That matters when the block of code runs hundreds of times per frame.
+			SetThreatGrid(checkX+2,checkY,markType);
+			SetThreatGrid(checkX-2,checkY,markType);
+			SetThreatGrid(checkX,checkY+2,markType);
+			SetThreatGrid(checkX,checkY-2,markType);
+			SetThreatGrid(checkX+1,checkY+1,markType);
+			SetThreatGrid(checkX-1,checkY+1,markType);
+			SetThreatGrid(checkX+1,checkY-1,markType);
+			SetThreatGrid(checkX-1,checkY-1,markType);
+		end
+		if (range3) then --By contrast, this block can only run once per function call, or four times per frame, so a loop makes more sense.
+			for i = 1,RANGE3_TABLE_SIZE do
+				local offsetX = RANGE3_TABLE[i][1];
+				local offsetY = RANGE3_TABLE[i][2];
+				SetThreatGrid(checkX+offsetX,checkY+offsetY,markType);
+			end
+		end
 
+		for i = 1,4 do
+			local tileX = checkX + ADJACENT_TILES[i][1];
+			local tileY = checkY + ADJACENT_TILES[i][2];
+			if (tileX == 0 or tileX == 63 or tileY == 0 or tileY == 63) then
+				goto continueUnitThreatRange;
+			end
+			if (occupiedGrid[tileX][tileY] == 1 and not maximalThreatMode) then
+				goto continueUnitThreatRange;
+			end
+			local currentDistance = distanceGrid[checkX][checkY]; --I am so, so sorry for this atrocity of indices.
+			local moveCost = MOVE_COSTS[terrainGrid[tileX][tileY]][CLASS_DATA[classID + LUA_TABLES_SUCK][CLASS_MOVETYPE]]; --Who am I kidding, I'm not sorry.
+			local newDistance = currentDistance + moveCost;
+			if (newDistance < distanceGrid[tileX][tileY] and newDistance <= mov) then
+				checkSize = checkSize + 1;
+				checkTiles[checkSize] = {tileX, tileY};
+				distanceGrid[tileX][tileY] = newDistance;
+			end			
+			::continueUnitThreatRange::
+		end
+		checkIndex = checkIndex + 1;
+	end
+	
 end
 
 --Function: HandleThreatRange()
@@ -1458,13 +1641,20 @@ function HandleThreatRange()
 			threatGrid[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 			occupiedGrid[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 		end
-		for i = 0,142,2 do --Set up occupiedGrid; what spaces are occupied by player units? Enemies can't pass through them.
+		for i = 0,142,2 do --Set up occupiedGrid; what spaces are occupied by player and green units? Enemies can't pass through them.
 			local unitAffiliation = mainmemory.read_u8(UNIT_AFFILIATION_TABLE + i);
 			local unitPointer = mainmemory.read_u16_le(UNIT_POINTER_TABLE + i);
-			if (unitAffiliation == 0 and unitPointer ~= 0) then --Unit must be player affiliation, and the slot needs to actually contain a unit.
+			if ((unitAffiliation == 0 or factionColors[unitAffiliation + LUA_TABLES_SUCK] == 3) and unitPointer ~= 0) then --Unit must be player or green affiliation, and the slot needs to actually contain a unit.
 				local unitX = mainmemory.read_u8(UNIT_X_POSITION_TABLE + i);
 				local unitY = mainmemory.read_u8(UNIT_Y_POSITION_TABLE + i);
 				occupiedGrid[unitX][unitY] = 1;
+			end
+		end
+		for i = 1,62 do --Set up terrainGrid
+			for j = 1,62 do
+				local terrainPointer = mainmemory.read_u16_le(TERRAIN_POINTER_TABLE + 2*i + 128*j);
+				terrainPointer = terrainPointer & 0x3ff;
+				terrainGrid[i][j] = mainmemory.read_u8(TERRAIN_TILE_TYPE_TABLE + terrainPointer);
 			end
 		end
 	--On frames 2-19, threat ranges are calculated, four units per frame. (The game only allocates memory for 72 units)
@@ -1497,6 +1687,15 @@ function HandleThreatRange()
 		for j = 1,64 do
 			if (playerMarks[i][j] == 1) then
 				gui.drawBox(i*16-bgScrollX,j*16-bgScrollY,i*16-bgScrollX+15,j*16-bgScrollY+15,"#7feb34c0","#3feb34c0");
+			end
+		end
+	end
+	for i = 1,64 do
+		for j = 1,64 do
+			if (displayedThreatGrid[i][j] == 1) then
+				gui.drawBox(i*16-bgScrollX,j*16-bgScrollY,i*16-bgScrollX+15,j*16-bgScrollY+15,"#7feb34c0","#3feb34c0");
+			elseif (displayedThreatGrid[i][j] == 2) then
+				gui.drawBox(i*16-bgScrollX,j*16-bgScrollY,i*16-bgScrollX+15,j*16-bgScrollY+15,"#7fff0000","#3fff0000");
 			end
 		end
 	end
