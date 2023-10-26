@@ -1570,7 +1570,7 @@ function UnitThreatRange(tableEntry)
 				goto continueUnitThreatRange;
 			end
 			local currentDistance = distanceGrid[checkX][checkY]; --I am so, so sorry for this atrocity of indices.
-			local moveCost = MOVE_COSTS[terrainGrid[tileX][tileY]][CLASS_DATA[classID + LUA_TABLES_SUCK][CLASS_MOVETYPE]]; --Who am I kidding, I'm not sorry.
+			local moveCost = MOVE_COSTS[terrainGrid[tileX][tileY] + LUA_TABLES_SUCK][CLASS_DATA[classID + LUA_TABLES_SUCK][CLASS_MOVETYPE]]; --Who am I kidding, I'm not sorry.
 			local newDistance = currentDistance + moveCost;
 			if (newDistance < distanceGrid[tileX][tileY] and newDistance <= mov) then
 				checkSize = checkSize + 1;
