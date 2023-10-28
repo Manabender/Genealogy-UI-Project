@@ -8,9 +8,12 @@
 LUA_TABLES_SUCK = 1; --Whenever you see this, it's because I'm using a 0-based index into a Lua table, which is 1-based. LUA WHY DO YOU DO THIS. THIS IS STUPID.
 
 globalToggle = true; --This script listens to the A button on 2P's controller. When it is pressed, the ENTIRE DISPLAY is toggled on and off.
-p2ALastFrame = false; --Was A on 2P's controller "down" on the last frame? Important because I only want to detect rising edges.
-p2BLastFrame = false;
-p2XFrames = 0;
+p2ALastFrame = false; --Was A on 2P's controller "down" on the last frame? Important because I only want to detect rising edges. --P2A toggles the entire display.
+p2BLastFrame = false; --P2B sets (and removes) manual marks on squares.
+p2XFrames = 0;        --P2X clears all manual marks if held for 1 second.
+p2YLastFrame = false; --P2Y sets (and unsets) an enemy unit as having a highlighted threat range.
+p2LLastFrame = false; --P2L cycles between threat displays; off/only-highlights/everyone
+p2RLastFrame = false; --P2R toggles threat modes between normal and maximal (maximal: shows where enemies could threaten if your units weren't in the way)
 
 DISPLAY_FLAGS = 0x0349; --These three bytes seem to correspond loosely with what "mode" the game is in, where modes include things like:
                      --cursor active to select unit; unit selected and move range shown; picking unit action; combat; castle; etc.
@@ -54,6 +57,8 @@ threatProcessFrame = 0; --Calculating threat ranges is computationally expensive
 threatProcessIndicatorPos = 0; --A small white square is shown in the upper right corner, and moved each time the threat process completes. This is it's y position.
 markQueued = false; --As a workaround for certain bugs and inconsistancies, threat marks are ONLY placed when the cursor is aligned to the grid. If the player requests a mark while unaligned, I "queue" the request and fulfill it next time cursor is aligned.
 maximalThreatMode = false; --User can toggle between normal threat, and "maximal" threat, which shows where enemies could go if your units weren't in the way.
+THREAT_COLORS_BORDER = {"#7feb34c0","#7fff0000","#7fffff00"};
+THREAT_COLORS_FILL = {"#3feb34c0","#3fff0000","#3fffff00"};
 ADJACENT_TILES = {{0,1}, {0,-1}, {1,0}, {-1,0}};
 CURSOR_X_ADDRESS = 0x1075; --Cursor location is stored quite weirdly. The map-x position of the cursor is equal to [$1076]+([$1075]/16).
 CURSOR_Y_ADDRESS = 0x1095; --^ Ditto
@@ -1470,6 +1475,7 @@ function UnitThreatRange(tableEntry)
 	local offset = tableEntry * 2;
 	local unitID = mainmemory.read_u16_le(UNIT_POINTER_TABLE + offset);
 	if (unitID == 0) then
+		highlightedUnits[tableEntry + LUA_TABLES_SUCK] = 0;
 		return; --Unit slot is empty.
 	end
 	
@@ -1487,6 +1493,7 @@ function UnitThreatRange(tableEntry)
 	if (unitColor == nil) then
 		return;
 	elseif (unitColor ~= 2 or unitHP == 0) then
+		highlightedUnits[tableEntry + LUA_TABLES_SUCK] = 0;
 		return; --Check if the unit is alive and an enemy. Abort if not.
 	end
 	
@@ -1524,7 +1531,11 @@ function UnitThreatRange(tableEntry)
 		return; --Unit has no attack weapons and thus threatens nothing.
 	end
 	
-	SetThreatGrid(unitX, unitY, markType); --Just for the sake of avoiding an awkward hole; an enemy unit always threatens its own tile.
+	if (markType == 1) then
+		SetThreatGrid(unitX, unitY, markType); --Just for the sake of avoiding an awkward hole; an enemy unit always threatens its own tile.
+	else
+		SetThreatGrid(unitX, unitY, 3); --A special highlight color to denote this unit has been manually selected as highlighted.
+	end
 	
 	local mov = 0;
 	local classID = memory.read_u8(enemyRomStatsPointer + ENEMY_ROM_STATS_CLASS_OFFSET);
@@ -1622,16 +1633,34 @@ function HandleThreatRange()
 	if (p2X) then
 		p2XFrames = p2XFrames + 1;
 		if (p2XFrames <= 59) then
-			gui.drawText(0,10,"Resetting threat marks...", nil, PLAYER_TEXT_COLOR);
+			gui.drawText(0,10,"Resetting manual marks...", nil, PLAYER_TEXT_COLOR);
 		else
 			for i = 1,64 do
 				playerMarks[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 			end
-			gui.drawText(0,10,"Threat marks reset", nil, PLAYER_TEXT_COLOR);
+			gui.drawText(0,10,"Manual marks reset", nil, PLAYER_TEXT_COLOR);
 		end
 	else
 		p2XFrames = 0;
 	end
+
+	local p2Y = p2ControllerButtons["Y"];
+	if (p2Y and not p2YLastFrame) then
+		local unitID = mainmemory.read_u16_le(HOVERED_UNIT_POINTER_TABLE_POINTER);
+		local i = 0;
+		while (i <= 71) do
+			if (unitID == mainmemory.read_u16_le(UNIT_POINTER_TABLE + 2*i)) then
+				if (highlightedUnits[i + LUA_TABLES_SUCK] == 0) then
+					highlightedUnits[i + LUA_TABLES_SUCK] = 1;
+				else
+					highlightedUnits[i + LUA_TABLES_SUCK] = 0;
+				end
+				i = 72;
+			end
+			i = i + 1;
+		end
+	end
+	p2YLastFrame = p2Y;
 
 
 	threatProcessFrame = threatProcessFrame + 1; --Calculating threat ranges is computationally expensive, so the work is distributed across several frames to avoid slowdown.
@@ -1686,16 +1715,14 @@ function HandleThreatRange()
 	for i = 1,64 do
 		for j = 1,64 do
 			if (playerMarks[i][j] == 1) then
-				gui.drawBox(i*16-bgScrollX,j*16-bgScrollY,i*16-bgScrollX+15,j*16-bgScrollY+15,"#7feb34c0","#3feb34c0");
+				gui.drawBox(i*16-bgScrollX,j*16-bgScrollY,i*16-bgScrollX+15,j*16-bgScrollY+15,"#7f0000ff","#3f0000ff");
 			end
 		end
 	end
 	for i = 1,64 do
 		for j = 1,64 do
-			if (displayedThreatGrid[i][j] == 1) then
-				gui.drawBox(i*16-bgScrollX,j*16-bgScrollY,i*16-bgScrollX+15,j*16-bgScrollY+15,"#7feb34c0","#3feb34c0");
-			elseif (displayedThreatGrid[i][j] == 2) then
-				gui.drawBox(i*16-bgScrollX,j*16-bgScrollY,i*16-bgScrollX+15,j*16-bgScrollY+15,"#7fff0000","#3fff0000");
+			if (displayedThreatGrid[i][j] >= 1) then
+				gui.drawBox(i*16-bgScrollX,j*16-bgScrollY,i*16-bgScrollX+15,j*16-bgScrollY+15,THREAT_COLORS_BORDER[displayedThreatGrid[i][j]],THREAT_COLORS_FILL[displayedThreatGrid[i][j]]);
 			end
 		end
 	end
