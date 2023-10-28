@@ -34,7 +34,7 @@ This script was specifically designed to only include quality-of-life improvemen
 - You can press player 2 B button to place a mark on the cursor's square. Press player 2 B on a marked square to remove the mark. Press and hold player 2 X for one second to remove all marks.
 - You can press player 2 L button to cycle threat display; between "highlighted units only", "all enemy units", and "no threat display".
 - You can press player 2 R button to toggle threat calculation mode; defaults to "normal", but when switched to "maximal", all blue and green units will be ignored and treated as though they do not block enemy movement.
-- You can press player 2 X button to highlight an enemy unit in the threat display. Their threat range will appear red, and the tile they are on will appear yellow to denote that this specific unit is highlighted. Press player 2 X on a highlighted unit to remove its highlight.
+- You can press player 2 Y button to highlight an enemy unit in the threat display. Their threat range will appear red, and the tile they are on will appear yellow to denote that this specific unit is highlighted. Press player 2 Y on a highlighted unit to remove its highlight.
 
 # Currently known issues (As of Oct 19, 2023)
 - The way in which unit data is interpreted varies by unit. Some units may need to be interpreted in a way I don't know about yet. All units in the prologue and chapter 1 appear to be interpreted correctly. Some later units may not be.
