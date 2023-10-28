@@ -13,7 +13,9 @@ p2BLastFrame = false; --P2B sets (and removes) manual marks on squares.
 p2XFrames = 0;        --P2X clears all manual marks if held for 1 second.
 p2YLastFrame = false; --P2Y sets (and unsets) an enemy unit as having a highlighted threat range.
 p2LLastFrame = false; --P2L cycles between threat displays; off/only-highlights/everyone
+p2LMessageFrames = 0; --When display is cycled, start a 120 frame timer during which a message is displayed.
 p2RLastFrame = false; --P2R toggles threat modes between normal and maximal (maximal: shows where enemies could threaten if your units weren't in the way)
+p2RMessageFrames = 0; --When mode is toggled, start a 120 frame timer during which a message is displayed.
 
 DISPLAY_FLAGS = 0x0349; --These three bytes seem to correspond loosely with what "mode" the game is in, where modes include things like:
                      --cursor active to select unit; unit selected and move range shown; picking unit action; combat; castle; etc.
@@ -56,6 +58,7 @@ highlightedUnits = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 threatProcessFrame = 0; --Calculating threat ranges is computationally expensive, so the work is distributed across several frames to avoid slowdown.
 threatProcessIndicatorPos = 0; --A small white square is shown in the upper right corner, and moved each time the threat process completes. This is it's y position.
 markQueued = false; --As a workaround for certain bugs and inconsistancies, threat marks are ONLY placed when the cursor is aligned to the grid. If the player requests a mark while unaligned, I "queue" the request and fulfill it next time cursor is aligned.
+threatDisplayMode = 1; --4 = no display, 1 = only highlights, 0 = all threat. These numbers are chosen because it makes it easy to filter desired threatmarks; if mark > this, then show it.
 maximalThreatMode = false; --User can toggle between normal threat, and "maximal" threat, which shows where enemies could go if your units weren't in the way.
 THREAT_COLORS_BORDER = {"#7feb34c0","#7fff0000","#7fffff00"};
 THREAT_COLORS_FILL = {"#3feb34c0","#3fff0000","#3fffff00"};
@@ -1662,6 +1665,45 @@ function HandleThreatRange()
 	end
 	p2YLastFrame = p2Y;
 
+	local p2L = p2ControllerButtons["L"];
+	if (p2L and not p2LLastFrame) then
+		if (threatDisplayMode == 4) then --4 means no display
+			threatDisplayMode = 1;
+		elseif (threatDisplayMode == 1) then --1 means only highlights
+			threatDisplayMode = 0;
+		else -- 0 means all threat
+			threatDisplayMode = 4;
+		end
+		p2LMessageFrames = 120;
+	end
+	p2LLastFrame = p2L;
+	if (p2LMessageFrames > 0) then
+		if (threatDisplayMode == 4) then
+			gui.drawText(0,20,"Threat display: OFF", nil, PLAYER_TEXT_COLOR);
+		elseif (threatDisplayMode == 1) then
+			gui.drawText(0,20,"Threat display: HIGHLIGHTS ONLY", nil, PLAYER_TEXT_COLOR);
+		else
+			gui.drawText(0,20,"Threat display: ALL ENEMIES", nil, PLAYER_TEXT_COLOR);
+		end
+		p2LMessageFrames = p2LMessageFrames - 1;
+	end
+
+	local p2R = p2ControllerButtons["R"];
+	if (p2R and not p2RLastFrame) then
+		maximalThreatMode = not maximalThreatMode;
+		p2RMessageFrames = 120;
+		threatProcessFrame = 0; --Threat computations may be invalid now, so start again from the beginning.
+	end
+	p2RLastFrame = p2R;
+	if (p2RMessageFrames > 0) then
+		if (maximalThreatMode) then
+			gui.drawText(0,30,"Threat mode: MAXIMAL", nil, PLAYER_TEXT_COLOR);
+		else
+			gui.drawText(0,30,"Threat mode: NORMAL", nil, PLAYER_TEXT_COLOR);
+		end
+		p2RMessageFrames = p2RMessageFrames - 1;
+	end
+
 
 	threatProcessFrame = threatProcessFrame + 1; --Calculating threat ranges is computationally expensive, so the work is distributed across several frames to avoid slowdown.
 	--On frame 1, things are initialized.
@@ -1721,7 +1763,7 @@ function HandleThreatRange()
 	end
 	for i = 1,64 do
 		for j = 1,64 do
-			if (displayedThreatGrid[i][j] >= 1) then
+			if (displayedThreatGrid[i][j] > threatDisplayMode) then
 				gui.drawBox(i*16-bgScrollX,j*16-bgScrollY,i*16-bgScrollX+15,j*16-bgScrollY+15,THREAT_COLORS_BORDER[displayedThreatGrid[i][j]],THREAT_COLORS_FILL[displayedThreatGrid[i][j]]);
 			end
 		end
