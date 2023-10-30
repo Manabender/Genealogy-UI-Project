@@ -615,6 +615,8 @@ GREEN_TEXT_COLOR = "#3F00FF00";
 YELLOW_TEXT_COLOR = "#3FFFFF00";
 UNKNOWN_TEXT_COLOR = "#3FFF00FF"; --This is used as a stopgap for if both the HP bubble is absent and the cache doesn't have data yet.
 UNEXPECTED_TEXT_COLOR = "3F7F7F7F"; --This is used if CGRAM has a color I haven't seen.
+HEALTH_BAR_AFFILIATION_COLORS = {"#FFFFFFFF", "#FFA0A0FF", "#FFFFA0A0", "#FFA0FFA0", "#FFFFFFA0", "#FFA0A0A0"}; --Colors used on the border of health bars to show their affiliation.
+HEALTH_BAR_FILL_COLORS = {"#FFFF0000", "#FFFF2A00", "#FFFF5500", "#FFFF7F00", "#FFFFAA00", "#FFFFD500", "#FFFFFF00", "#FFD5FF00", "#FFAAFF00", "#FF7FFF00", "#FF55FF00", "#FF2AFF00", "#FF00FF00"} --A gradient from red to yellow to green to colorfully show rough health level.
 
 RANGE3_TABLE = {{3, 0}, {-3, 0}, {0, 3}, {0, -3}, --A list of every tile offset that lies between 3 and 10 of (0,0).
 {2, 1}, {-2, 1}, {2, -1}, {-2, -1}, --List was generated with a Python script I cobbled together in like five minutes.
@@ -1456,8 +1458,13 @@ function DisplayMapHealthBars()
 		local unitScreenY = mainmemory.read_u16_le(UNIT_Y_SCREEN_POSITION_TABLE + i);
 		
 		local fillLevel = 2 + math.floor(12 * currentHP / maxHP); --Ensures that bar is always at least 1 pixel, and that being even 1 below max will have 1 missing pixel.
-		gui.drawBox(unitScreenX - bgScrollX, unitScreenY - bgScrollY + 13, unitScreenX - bgScrollX + 14, unitScreenY - bgScrollY + 15, nil, "#FF000000");
-		gui.drawBox(unitScreenX - bgScrollX, unitScreenY - bgScrollY + 13, unitScreenX - bgScrollX + fillLevel, unitScreenY - bgScrollY + 15, "#00000000", "#FF00FF00");
+		local unitAffiliation = mainmemory.read_u8(coreStatsPointer + CORE_STATS_AFFILIATION_OFFSET);
+		local affiliationColor = 0;
+		if (factionColors[unitAffiliation + LUA_TABLES_SUCK] ~= nil) then
+			affiliationColor = factionColors[unitAffiliation + LUA_TABLES_SUCK];
+		end
+		gui.drawBox(unitScreenX - bgScrollX, unitScreenY - bgScrollY + 13, unitScreenX - bgScrollX + 14, unitScreenY - bgScrollY + 15, HEALTH_BAR_AFFILIATION_COLORS[affiliationColor + LUA_TABLES_SUCK], "#FF000000");
+		gui.drawBox(unitScreenX - bgScrollX, unitScreenY - bgScrollY + 13, unitScreenX - bgScrollX + fillLevel, unitScreenY - bgScrollY + 15, "#00000000", HEALTH_BAR_FILL_COLORS[fillLevel - 1]);
 		::continue::
 	end
 end
