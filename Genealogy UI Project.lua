@@ -139,6 +139,7 @@ PLAYER_STATS_CLASS_OFFSET = 8;
 PLAYER_STATS_LEVEL_OFFSET = 9;
 PLAYER_STATS_FUNDS_OFFSET = 11;
 PLAYER_STATS_EXPERIENCE_OFFSET = 13;
+PLAYER_STATS_TALK_FLAG_OFFSET = 14; --Denotes if the unit has a Talk event with another; 0 if not, some nonzero unit ID if so.
 
 PLAYER_ROM_STATS_PERSONAL_SKILLS_OFFSET = 15; --This byte and the next two are bitmasks that define which skills are personals for the unit.
 
@@ -776,6 +777,13 @@ function DisplayUnitStatsOverlay()
 		classID = 0; --Prevent further issues with class lookups by failing back to a known safe value.
 	end
 	gui.drawText(0, 179, className, nil, textColor);
+
+	if (dataPattern == 0) then
+		local talkFlag = memory.read_u8(playerStatsPointer + PLAYER_STATS_TALK_FLAG_OFFSET);
+		if (talkFlag > 0) then
+			gui.drawText(0, 169, "Talk", nil, textColor);
+		end
+	end
 	
 	--Current HP is in the same place for both player and enemy units.
 	local currentHP = mainmemory.read_u8(coreStatsPointer + CORE_STATS_CURRENT_HP_OFFSET);
