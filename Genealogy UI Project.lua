@@ -1504,6 +1504,10 @@ function UnitThreatRange(tableEntry)
 		return; --I don't know how this is possible. I don't know what the game is doing. All I know is that sometimes this happens and if I don't
 		        --break out here when it does, we crash and burn. Please send help.
 	end
+	local classID = memory.read_u8(enemyRomStatsPointer + ENEMY_ROM_STATS_CLASS_OFFSET);
+	if (classID >= NUM_CLASSES) then
+		return; --Class does not exist. A sanity check to hopefully fix mysterious crashes.
+	end
 	
 	local unitAffiliation = mainmemory.read_u8(UNIT_AFFILIATION_TABLE + offset);
 	local unitColor = factionColors[unitAffiliation + LUA_TABLES_SUCK];
@@ -1556,7 +1560,6 @@ function UnitThreatRange(tableEntry)
 	end
 	
 	local mov = 0;
-	local classID = memory.read_u8(enemyRomStatsPointer + ENEMY_ROM_STATS_CLASS_OFFSET);
 	if (not range3) then --If my sources are correct, having a range 3-10 weapon forces the unit to have 0 mov.		
 		mov = CLASS_DATA[classID + LUA_TABLES_SUCK][CLASS_MOV] * 10; --Multiply by 10 because of roads, basically. They cost 0.7 for most units and I don't trust floats like I do ints.
 	end
