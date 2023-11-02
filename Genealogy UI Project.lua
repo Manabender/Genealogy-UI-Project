@@ -352,6 +352,7 @@ MOVE_COSTS = { --Table defining the amount of movement required to enter each ti
 { 999, 999,  10, 999, 999, 999, 999, 999}, --T. of Bragi
 {   7,   7,  10,   7,   7,   7,   7,   7}  --Road
 } --Game graphics go completely bonkers if it reads a tile type ID of 26 or greater. This makes me confident that only types 0-25 will appear.
+NUM_TERRAIN_TYPES = #MOVE_COSTS
 
 CLASS_DATA = { --           Bases                                 Growths
 --Name          HP Str Mag Skl Spd Def Res Mov  Gold   HP  Str Mag Skl Spd Def Res  Effective?              Skill           Skill           Movetype
@@ -1744,6 +1745,9 @@ function HandleThreatRange()
 				local terrainPointer = mainmemory.read_u16_le(TERRAIN_POINTER_TABLE + 2*i + 128*j);
 				terrainPointer = terrainPointer & 0x3ff;
 				terrainGrid[i][j] = mainmemory.read_u8(TERRAIN_TILE_TYPE_TABLE + terrainPointer);
+				if (terrainGrid[i][j] >= NUM_TERRAIN_TYPES) then
+					threatProcessFrame = -10; --Sometimes, other data is loaded into the area where terrain data lives. In this case, abort everything and just try again in a few frames.
+				end
 			end
 		end
 	--On frames 2-19, threat ranges are calculated, four units per frame. (The game only allocates memory for 72 units)
@@ -1754,7 +1758,7 @@ function HandleThreatRange()
 		UnitThreatRange(threatProcessFrame*4 - 6);
 		UnitThreatRange(threatProcessFrame*4 - 5);
 	--On frame 20, the calculated data is copied over to the displayed grid to be shown, and a small visual indicator is updated in the upper right corner to show that an update occurred.
-	else
+	elseif (threatProcessFrame >= 20) then
 		for i = 1,64 do
 			for j = 1,64 do
 				displayedThreatGrid[i][j] = threatGrid[i][j];
