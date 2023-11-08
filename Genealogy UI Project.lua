@@ -1,8 +1,10 @@
 --Genealogy UI Project
 --This is a Lua script designed for use with BizHawk 2.9.1 and Fire Emblem: Genealogy of the Holy War.
---This script adds an information overlay to the bottom of the screen showing details about the hovered-over unit.
---The layout of this overlay was heavily inspired by (read: outright ripped-off from) Fire Emblem Engage.
---This script also adds a better combat forecast, inspired by more recent FE games.
+--This script adds four major UI features:
+--1. An information overlay on the bottom of the screen showing details about the hovered-over unit. The layout of this overlay was heavily inspired by (read: outright ripped-off from) Fire Emblem Engage.
+--2. A better combat forecast, inspired by more recent FE games. Helps the player make informed combat decisions without having to dance in and out of a bunch of menus and unit detail windows.
+--3. Health bars at the foot of every unit, color coded by both affiliation and health percentage.
+--4. Threat range display, showing what squares the enemy could possibly attack on their next turn. Supports marking individual enemies for highlighted display, and something no other FE game does; togglable "Maximal" mode, showing where enemies could reach if your units didn't block them.
 --Note that this script REQUIRES the BSNES emulator core to be enabled, which it is not by default. Config > Preferred Cores > Snes > BSNES.
 
 LUA_TABLES_SUCK = 1; --Whenever you see this, it's because I'm using a 0-based index into a Lua table, which is 1-based. LUA WHY DO YOU DO THIS. THIS IS STUPID.
@@ -711,7 +713,6 @@ function DisplayUnitStatsOverlay()
 	local weaponDataPointer = mainmemory.read_u16_le(unitID + POINTER_TABLE_WEAPON_DATA_OFFSET);
 	local dataPattern = mainmemory.read_u8(unitID + POINTER_TABLE_DATA_PATTERN_OFFSET); --This byte seems to correspond to how the unit's data should be read. Values of 0 and 2 are "player" patterns, 3 is "enemy". Others probably exist.
 	
-	--Most stats are read or calculated differently depending on whether the unit is player or not. We need to read affiliation first.
 	local unitAffiliation = mainmemory.read_u8(coreStatsPointer + CORE_STATS_AFFILIATION_OFFSET);
 	
 	local textColor = ""; --To find unit color: If HP bubble displayed, display that and use it to update cache. If not, use cache to determine color. If cache is nil, fallback to a default.
@@ -1478,7 +1479,10 @@ function DisplayMapHealthBars()
 	end
 end
 
---index out of bounds errors can kiss my
+--Function: SetThreatGrid(x, y, val)
+--Summary: Sets threatGrid[x][y] to val, if val is greater and if x and y are within bounds. Does nothing otherwise. Primarily implemented to prevent index-out-of-bounds issues.
+--Parameters: x, y: Coordinates of tile to set. val: Value to set to.
+--Returns: Nothing directly, but updates threatGrid.
 function SetThreatGrid(x, y, val)
 	if (x < 1 or x > 64 or y < 1 or y > 64) then
 		return;
@@ -1602,8 +1606,8 @@ function UnitThreatRange(tableEntry)
 			if (occupiedGrid[tileX][tileY] == 1 and not maximalThreatMode) then
 				goto continueUnitThreatRange;
 			end
-			local currentDistance = distanceGrid[checkX][checkY]; --I am so, so sorry for this atrocity of indices.
-			local moveCost = MOVE_COSTS[terrainGrid[tileX][tileY] + LUA_TABLES_SUCK][CLASS_DATA[classID + LUA_TABLES_SUCK][CLASS_MOVETYPE]]; --Who am I kidding, I'm not sorry.
+			local currentDistance = distanceGrid[checkX][checkY];
+			local moveCost = MOVE_COSTS[terrainGrid[tileX][tileY] + LUA_TABLES_SUCK][CLASS_DATA[classID + LUA_TABLES_SUCK][CLASS_MOVETYPE]];
 			local newDistance = currentDistance + moveCost;
 			if (newDistance < distanceGrid[tileX][tileY] and newDistance <= mov) then
 				checkSize = checkSize + 1;
