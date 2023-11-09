@@ -41,8 +41,8 @@ CGRAM_FACTION_BLUE = 0x62d5; --Values found at that address for each color.
 CGRAM_FACTION_RED = 0x5afa;
 CGRAM_FACTION_GREEN = 0x4f58;
 CGRAM_FACTION_YELLOW = 0x5318;
-HP_BUBBLE_CHECK_ADDRESS = 0x0349; --Address in WRAM that always seems to be 82 if the HP bubble is displayed.
-HP_BUBBLE_CHECK_VALUE = 82;
+HP_BUBBLE_CHECK_ADDRESS = 0x053a; --2-byte address in WRAM that always seems to be 0x24e0 if the HP bubble is displayed.
+HP_BUBBLE_CHECK_VALUE = 0x24e0;
 
 playerMarks = {}; --Table denoting what player-placed "threat range" marks are placed on the map.
 threatGrid = {}; --Table denoting how every tile should (or should not) be marked as threatened.
@@ -717,7 +717,7 @@ function DisplayUnitStatsOverlay()
 	
 	local textColor = ""; --To find unit color: If HP bubble displayed, display that and use it to update cache. If not, use cache to determine color. If cache is nil, fallback to a default.
 	local unitColor = -1;
-	local hpBubbleValue = mainmemory.read_u8(HP_BUBBLE_CHECK_ADDRESS);
+	local hpBubbleValue = mainmemory.read_u16_le(HP_BUBBLE_CHECK_ADDRESS);
 	if (hpBubbleValue == HP_BUBBLE_CHECK_VALUE) then
 		memory.usememorydomain("CGRAM");
 		local cgramColor = memory.read_u16_le(CGRAM_FACTION_COLOR_ADDRESS);
