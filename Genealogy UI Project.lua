@@ -1533,6 +1533,12 @@ function UnitThreatRange(tableEntry)
 	end
 	local unitX = mainmemory.read_u8(UNIT_X_POSITION_TABLE + offset);
 	local unitY = mainmemory.read_u8(UNIT_Y_POSITION_TABLE + offset);
+	if (unitX == nil or unitY == nil) then
+		return; --I don't know exactly what's going on, but I've seen another player's script crash and report the line "distanceGrid[unitX][unitY]" as attempting to reference a nil value. I cannot reproduce this error. This is an attempt to fix it.
+	end
+	if (unitX <= 0 or unitX >= 65 or unitY <= 0 or unitY >= 65) then
+		return;
+	end;
 	distanceGrid[unitX][unitY] = 0; --The space the unit is at is 0 away. By definition.
 	local checkTiles = { {unitX, unitY} }; --List of tile coordinates to check. Start with where the unit is.
 	local markType = 1; --Are we applying normal global marks, or highlighted marks?
