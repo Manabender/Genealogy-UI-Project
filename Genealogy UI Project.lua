@@ -1505,11 +1505,14 @@ function UnitThreatRange(tableEntry)
 	local coreStatsPointer = mainmemory.read_u16_le(unitID + POINTER_TABLE_CORE_STATS_OFFSET);
 	local enemyRomStatsPointer = mainmemory.read_u24_le(unitID + POINTER_TABLE_ENEMY_ROM_STATS_OFFSET);
 	local weaponDataPointer = mainmemory.read_u16_le(unitID + POINTER_TABLE_WEAPON_DATA_OFFSET);
-	if (enemyRomStatsPointer == 0) then
-		return; --I don't know how this is possible. I don't know what the game is doing. All I know is that sometimes this happens and if I don't
-		        --break out here when it does, we crash and burn. Please send help.
+	
+	local classID = 0;
+	if (enemyRomStatsPointer == 0) then --Any unit that starts red but can be recruited doesn't have enemy ROM stats. They read from player stats instead.
+		local playerStatsPointer = mainmemory.read_u24_le(unitID + POINTER_TABLE_PLAYER_STATS_OFFSET);
+		classID = memory.read_u8(playerStatsPointer + PLAYER_STATS_CLASS_OFFSET);
+	else
+		classID = memory.read_u8(enemyRomStatsPointer + ENEMY_ROM_STATS_CLASS_OFFSET);
 	end
-	local classID = memory.read_u8(enemyRomStatsPointer + ENEMY_ROM_STATS_CLASS_OFFSET);
 	if (classID >= NUM_CLASSES) then
 		return; --Class does not exist. A sanity check to hopefully fix mysterious crashes.
 	end
