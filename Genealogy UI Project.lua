@@ -43,6 +43,7 @@ CGRAM_FACTION_GREEN = 0x4f58;
 CGRAM_FACTION_YELLOW = 0x5318;
 HP_BUBBLE_CHECK_ADDRESS = 0x053a; --2-byte address in WRAM that always seems to be 0x24e0 if the HP bubble is displayed.
 HP_BUBBLE_CHECK_VALUE = 0x24e0;
+HP_BUBBLE_CHECK_VALUE_STATUS = 0x2500; --Or it could be this, if it's showing a status effect.
 
 playerMarks = {}; --Table denoting what player-placed "threat range" marks are placed on the map.
 threatGrid = {}; --Table denoting how every tile should (or should not) be marked as threatened.
@@ -718,7 +719,7 @@ function DisplayUnitStatsOverlay()
 	local textColor = ""; --To find unit color: If HP bubble displayed, display that and use it to update cache. If not, use cache to determine color. If cache is nil, fallback to a default.
 	local unitColor = -1;
 	local hpBubbleValue = mainmemory.read_u16_le(HP_BUBBLE_CHECK_ADDRESS);
-	if (hpBubbleValue == HP_BUBBLE_CHECK_VALUE) then
+	if (hpBubbleValue == HP_BUBBLE_CHECK_VALUE or hpBubbleValue == HP_BUBBLE_CHECK_VALUE_STATUS) then
 		memory.usememorydomain("CGRAM");
 		local cgramColor = memory.read_u16_le(CGRAM_FACTION_COLOR_ADDRESS);
 		if (cgramColor == CGRAM_FACTION_BLUE) then
@@ -1864,6 +1865,8 @@ while true do
 			handCursorDisplayed = true;
 		end
 		memory.usememorydomain("System Bus");
+
+		local hpBubbleValue = mainmemory.read_u16_le(HP_BUBBLE_CHECK_ADDRESS);
 			
 		--Determine which overlay, if any, to show.
 		if (not (displayFlagsHistory[1] == displayFlagsHistory[2] and displayFlagsHistory[1] == displayFlagsHistory[3] and displayFlagsHistory[1] == displayFlagsHistory[4] and displayFlagsHistory[1] == displayFlagsHistory[5] and displayFlagsHistory[1] == displayFlagsHistory[6])) then
@@ -1884,8 +1887,12 @@ while true do
 			DisplayUnitStatsOverlay();
 		elseif (handCursorDisplayed) then
 			gui.clearGraphics();
+		elseif (hpBubbleValue == HP_BUBBLE_CHECK_VALUE or hpBubbleValue == HP_BUBBLE_CHECK_VALUE_STATUS) then
+			HandleThreatRange();
+			DisplayMapHealthBars();
+			DisplayUnitStatsOverlay();
 		elseif (displayFlags&126 == 126) then --%01111110 and %01111111 seem to always correspond to cases where it's inappropriate for any overlay, EXCEPT for forecast and when unit move range is shown.
-			gui.clearGraphics();
+			gui.clearGraphics();              --But also it seems to switch to %01111111 when showing a status effect in an HP bubble, and I DO want display on then.
 		else --All disable checks have passed; show overlay.
 			HandleThreatRange();
 			DisplayMapHealthBars();
