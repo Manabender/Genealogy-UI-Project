@@ -719,7 +719,7 @@ function DisplayUnitStatsOverlay()
 	local textColor = ""; --To find unit color: If HP bubble displayed, display that and use it to update cache. If not, use cache to determine color. If cache is nil, fallback to a default.
 	local unitColor = -1;
 	local hpBubbleValue = mainmemory.read_u16_le(HP_BUBBLE_CHECK_ADDRESS);
-	if (hpBubbleValue == HP_BUBBLE_CHECK_VALUE or hpBubbleValue == HP_BUBBLE_CHECK_VALUE_STATUS) then
+	if ((hpBubbleValue == HP_BUBBLE_CHECK_VALUE or hpBubbleValue == HP_BUBBLE_CHECK_VALUE_STATUS) and mainmemory.read_u8(DISPLAY_FLAGS) ~= 0x7e) then
 		memory.usememorydomain("CGRAM");
 		local cgramColor = memory.read_u16_le(CGRAM_FACTION_COLOR_ADDRESS);
 		if (cgramColor == CGRAM_FACTION_BLUE) then
