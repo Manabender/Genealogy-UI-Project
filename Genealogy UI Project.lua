@@ -580,21 +580,21 @@ WEAPON_DATA = {
 {"BarierRing",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
 {"Leg Ring"  ,  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$78
 {"Skill Ring",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$7C
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$80
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$84
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"NOTHING???",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$88
+{"0x7A      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"0x7B      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"0x7C      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$7C
+{"0x7D      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"0x7E      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"0x7F      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"0x80      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$80
+{"0x81      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"0x82      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"0x83      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"0x84      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$84
+{"0x85      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"0x86      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"0x87      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"0x88      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$88
 {"Circlet"   ,  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,  SKILL_MIRACLE, SKILL_RENEWAL, 0}  --Circlet, why are you way the heck down here?
 }
 NUM_WEAPONS = #WEAPON_DATA; -- # is the "get length" operator of Lua.
