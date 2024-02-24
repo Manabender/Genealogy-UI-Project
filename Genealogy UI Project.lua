@@ -580,7 +580,7 @@ WEAPON_DATA = {
 {"BarierRing",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
 {"Leg Ring"  ,  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$78
 {"Skill Ring",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
-{"0x7A      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
+{"Brk*Tyrfng",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
 {"0x7B      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
 {"0x7C      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0}, --$7C
 {"0x7D      ",  0,  0,   0, false, false, false,   WEAPONTYPE_OTHER,                      0,              0,             0, 0},
