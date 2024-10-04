@@ -714,6 +714,10 @@ function DisplayUnitStatsOverlay()
 	local weaponDataPointer = mainmemory.read_u16_le(unitID + POINTER_TABLE_WEAPON_DATA_OFFSET);
 	local dataPattern = mainmemory.read_u8(unitID + POINTER_TABLE_DATA_PATTERN_OFFSET); --This byte seems to correspond to how the unit's data should be read. Values of 0 and 2 are "player" patterns, 3 is "enemy". Others probably exist.
 	
+	--The following line is very, VERY naughty. I weakly justify this by noting that it has been eight months since I last touched this script and honestly cannot be assed to do it right. I also don't even know if it works. Never do this. Ever. Including you, future self.
+	--I'm assuming that 2nd gen units have dataPattern = 1 and use this only so that they can check RAM for skills instead of ROM.
+	if (dataPattern == 1) then dataPattern = 0; end
+
 	local unitAffiliation = mainmemory.read_u8(coreStatsPointer + CORE_STATS_AFFILIATION_OFFSET);
 	
 	local textColor = ""; --To find unit color: If HP bubble displayed, display that and use it to update cache. If not, use cache to determine color. If cache is nil, fallback to a default.
@@ -1455,7 +1459,7 @@ function DisplayMapHealthBars()
 		end
 				
 		local maxHP = 0;
-		if (dataPattern == 0 or dataPattern == 2) then --Player
+		if (dataPattern == 0 or dataPattern == 1 or dataPattern == 2) then --Player
 			local playerStatsPointer = mainmemory.read_u24_le(unitID + POINTER_TABLE_PLAYER_STATS_OFFSET);
 			maxHP = memory.read_u8(playerStatsPointer + PLAYER_STATS_MAX_HP_OFFSET);
 		else
